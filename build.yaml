@@ -1,0 +1,15 @@
+---
+name: "jellyfin-plugin-custom-javascript"
+guid: "2919b0df-8252-4c02-8210-d628adcd651b"
+version: "5" # Please increment with each pull request
+jellyfin_version: "10.5.0" # The earliest binary-compatible version
+owner: "jellyfin"
+nicename: "Custom Javascript"
+description: "Inject custom javascript to the Jellyfin web ui"
+overview: "Inject custom javascript to the Jellyfin web ui"
+category: "Metadata"
+artifacts:
+  - "Jellyfin.Plugin.CustomJavascript.dll"
+build_type: "dotnet"
+dotnet_configuration: "Release"
+dotnet_framework: "netstandard2.1"

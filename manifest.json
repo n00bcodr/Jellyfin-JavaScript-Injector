@@ -1,0 +1,28 @@
+[
+    {
+        "guid": "2919b0df-8252-4c02-8210-d628adcd651b",
+        "name": "Custom Javascript",
+        "overview": "Inject custom javascript to the Jellyfin web ui",
+        "description": "Inject custom javascript to the Jellyfin web ui",
+        "owner": "johnpc",
+        "category": "General",
+        "versions": [
+            {
+                "version": "0.0.0.1",
+                "changelog": "- See the full changelog at [GitHub](https://github.com/johnpc/jellyfin-plugin-custom-javascript/releases/tag/0.0.0.1)\n",
+                "targetAbi": "10.9.9.0",
+                "sourceUrl": "https://github.com/johnpc/jellyfin-plugin-custom-javascript/releases/download/0.0.0.1/custom-javascript-0.0.0.1.zip",
+                "checksum": "3b6abea22035e29d64cf967e4fff9271",
+                "timestamp": "2025-03-09T20:48:21Z"
+            },
+            {
+                "version": "0.0.0.1",
+                "changelog": "- See the full changelog at [GitHub](https://github.com/johnpc/jellyfin-plugin-custom-javascript/releases/tag/0.0.0.1)\n",
+                "targetAbi": "10.9.9.0",
+                "sourceUrl": "https://github.com/johnpc/jellyfin-plugin-custom-javascript/releases/download/0.0.0.1/custom-javascript-0.0.0.1.zip",
+                "checksum": "7171c5c4529d8c4b72d42a0d9104090d",
+                "timestamp": "2025-03-09T20:30:32Z"
+            }
+        ]
+    }
+]
