@@ -1,109 +1,125 @@
-# Jellyfin Custom JavaScript Plugin
+# Jellyfin Plugin - JavaScript Injector
 
-This plugin allows you to inject custom JavaScript code into the Jellyfin web UI. It provides a configuration page with a text area where you can enter any JavaScript code, which will then be executed when the Jellyfin web interface loads.
+The JavaScript Injector plugin for Jellyfin allows you to inject multiple, independent JavaScript snippets into the Jellyfin web UI. It provides a powerful and easy-to-use configuration page to manage all your custom scripts from one place.
 
-## Install Process
+<p align="center">
+  <img src="https://img.shields.io/badge/Jellyfin%20Version-10.10.x-AA5CC3?logo=jellyfin&logoColor=00A4DC&labelColor=black" alt="Jellyfin Version">
+  <br/><br/>
+    <img alt="Logo" src="icon.png" width="80%"  />
+<br>
+</p>
 
-### IMPORTANT: If your Jellyfin server runs on a Docker container without root, then you'll need to perform the following prerequisites
+## ✨ Features
+--------
 
-The client script will fail to inject automatically into the jellyfin-web server if there is a difference in permission between the owner of the web files (root, or www-data, etc.) and the executor of the main jellyfin-server. You will see an error in your Jellyfin server logs in this case, like
+-   **Multiple Scripts**: Add as many custom JavaScript snippets as you want.
 
-```bash
-[2025-03-09 19:30:41.162 +00:00] [ERR] [1] Jellyfin.Plugin.CustomJavaScript.Plugin: Encountered exception while writing to "/usr/share/jellyfin/web/index.html": "System.UnauthorizedAccessException: Access to the path '/usr/share/jellyfin/web/index.html' is denied.
+-   **Organized UI**: Each script is managed in its own collapsible section, keeping your configuration clean and easy to navigate.
+
+-   **Enable/Disable on the Fly**: Toggle individual scripts on or off without having to delete the code.
+
+-   **Immediate Injection**: The plugin injects a loader script into the Jellyfin web UI upon server startup. Your custom scripts are loaded dynamically, and changes take effect after a simple browser refresh.
+
+
+
+## ⚙️ Installation
+
+------------
+
+1.  In Jellyfin, go to **Dashboard** > **Plugins** > **Catalog** > ⚙️
+2.  Click **➕** and give the repository a name (e.g., "JavaScript Injector Repo").
+3.  Set the **Repository URL** to: `https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/manifest.json`
+4.  Click **Save**.
+5.  Go to the **Catalog** tab, find **JavaScript Injector** in the list, and click **Install**.
+6.  **Restart** your Jellyfin server to complete the installation.
+
+
+## 🔧 Configuration
+-------------
+
+1.  After installing, navigate to **Dashboard** > **Plugins** > **JavaScript Injector** in the list **--OR--** click on "JS Injector" in the dashboard sidebar
+
+2.  Click **Add Script** to create a new entry.
+3.  Give your script a descriptive **name**.
+4.  Enter your code in the **JavaScript Code** text area.
+5.  Use the **Enabled** checkbox to control whether the script is active.
+6.  Click **Save**.
+7.  **Refresh your browser** to see the changes take effect.
+
+
+## ⌨️ Usage Examples
+--------------
+
+### Example 1: Simple Browser Alert Message
+
+A great way to test if the plugin is working.
+
+```js
+(function() {
+    'use strict';
+
+    const toast= `
+        alert('Yay!, Javascript injection worked!');
+    `;
+
+    const scriptElem = document.createElement('script');
+    scriptElem.textContent = toast;
+    document.head.appendChild(scriptElem);
+})();
+
+
 ```
 
-If this happens, you can mitigate the issue by
+### Example 2: Add a Custom Banner
 
-1. Run `docker cp jellyfin_server_1:/usr/share/jellyfin/web/index.html /your/jellyfin/config/path/index.html`
-2. Update your docker-compose file with a `volume` mapping, like `- /your/jellyfin/config/path/index.html:/usr/share/jellyfin/web/index.html`
+This script adds a banner to the top of the page for a specific user.
 
-This way, the plugin will have appropriate permissions to inject javascript into the index.html file.
+```js
+// Change this to the username you want to target
+(function () {
+    const targetUsername = 'admin';
 
-### Plugin Installation Process
+    const flashingBannerCSS = `
+    @keyframes flashBanner {
+        0% { background-color: #ffeb3b; color: black; }
+        50% { background-color: #ff2111; color: white; }
+        100% { background-color: #ffeb3b; color: black; }
+    }
+    .skinHeader::before {
+        content: "⚠️ NOTICE: Special Banner for ${targetUsername} ⚠️";
+        display: block;
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        padding: 0px;
+        animation: flashBanner 1s infinite;
+        position: relative;
+        z-index: 9999;
+    }
+    `;
 
-1. In Jellyfin, go to `Dashboard -> Plugins -> Catalog -> Gear Icon (upper left)` add and a repository.
-1. Set the Repository name to @johnpc (Custom Javascript)
-1. Set the Repository URL to https://raw.githubusercontent.com/johnpc/jellyfin-plugin-custom-javascript/refs/heads/main/manifest.json
-1. Click "Save"
-1. Go to Catalog and search for Custom Javascript
-1. Click on it and install
-1. Restart Jellyfin
+    function tryInjectBanner() {
+        const userButton = document.querySelector(".headerUserButton");
+        if (userButton && userButton.title.toLowerCase() === targetUsername.toLowerCase()) {
+            const styleElem = document.createElement('style');
+            styleElem.innerText = flashingBannerCSS;
+            document.head.appendChild(styleElem);
+            return true;
+        }
+        return false;
+    }
+    const interval = setInterval(() => {
+        if (tryInjectBanner()) clearInterval(interval);
+    }, 300);
+})();
 
-## Configuration
-
-1. After installing the plugin, go to Dashboard → Plugins
-2. Find "Custom JavaScript" in the list and click on it
-3. In the text area, enter the JavaScript code you want to inject
-4. Click Save
-5. Refresh your browser to apply the changes
-
-## Usage Examples
-
-Here are some examples of what you can do with custom JavaScript:
-
-### Hello World
-
-```javascript
-console.log("hello from the plugin");
 ```
 
-### Modify the CSS Based On Username
+## 🙏🏻Credits
+This plugin is a fork of and builds upon the original work of [johnpc](https://github.com/johnpc/jellyfin-plugin-custom-javascript). Thanks to the original author for creating the foundation for this project.
 
-```javascript
-const userNameToShowCustomCss = 'guest'
+## 🗒️ Note
+-------------
 
-const customCSS = document.createElement('style');
-customCSS.textContent = `
-.skinHeader::after {
-    content: "NOTICE: This banner CSS was created via custom javascript! You'll only see this when logged in as ${userNameToShowCustomCss}$";
-    display: block;
-    position: relative;
-    background-color: #fbc531;
-    color: #192a56;
-    left: 50%;
-    transform: translateX(-50%);
-    width: fit-content;
-    text-align: center;
-    width: 100%;
-    padding: 10px;
-}
-.homeSectionsContainer {
-  margin-top: 50px;
-}
-`;
-const userButton = document.querySelector(".headerUserButton");
-if (userButton.title.toLowerCase() === userNameToShowCustomCss) {
-    document.head.appendChild(customCSS);
-}
-```
-
-## Development
-
-### Building from Source
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/johnpc/jellyfin-plugin-custom-javascript.git
-   ```
-
-2. Build the plugin:
-   ```
-   dotnet build
-   ```
-
-3. The compiled dll will be in the `bin/Debug/net6.0` directory
-
-### Project Structure
-
-- `Plugin.cs` - The main plugin class
-- `Configuration/PluginConfiguration.cs` - Defines the configuration model
-- `Configuration/configPage.html` - The HTML for the configuration page
-- `Web/customjavascript.js` - The JavaScript file that injects custom code into Jellyfin
-
-## License
-
-This plugin is licensed under the MIT License.
-
-## Security Note
-
-Be careful when using custom JavaScript as it can potentially introduce security vulnerabilities. Only use code from trusted sources or that you fully understand. The plugin author is not responsible for any issues caused by custom code entered by users.
+Be careful when using any custom JavaScript, as it can potentially introduce security vulnerabilities or break the Jellyfin UI. Only use code from trusted sources or code that you have written and fully understand.
