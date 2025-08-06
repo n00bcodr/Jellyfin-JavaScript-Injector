@@ -10,7 +10,6 @@ The JavaScript Injector plugin for Jellyfin allows you to inject multiple, indep
 </p>
 
 ## ✨ Features
---------
 
 -   **Multiple Scripts**: Add as many custom JavaScript snippets as you want.
 
@@ -21,10 +20,8 @@ The JavaScript Injector plugin for Jellyfin allows you to inject multiple, indep
 -   **Immediate Injection**: The plugin injects a loader script into the Jellyfin web UI upon server startup. Your custom scripts are loaded dynamically, and changes take effect after a simple browser refresh.
 
 
-
 ## ⚙️ Installation
 
-------------
 
 1.  In Jellyfin, go to **Dashboard** > **Plugins** > **Catalog** > ⚙️
 2.  Click **➕** and give the repository a name (e.g., "JavaScript Injector Repo").
@@ -35,7 +32,6 @@ The JavaScript Injector plugin for Jellyfin allows you to inject multiple, indep
 
 
 ## 🔧 Configuration
--------------
 
 1.  After installing, navigate to **Dashboard** > **Plugins** > **JavaScript Injector** in the list **--OR--** click on "JS Injector" in the dashboard sidebar
 
@@ -48,7 +44,6 @@ The JavaScript Injector plugin for Jellyfin allows you to inject multiple, indep
 
 
 ## ⌨️ Usage Examples
---------------
 
 ### Example 1: Simple Browser Alert Message
 
@@ -117,9 +112,24 @@ This script adds a banner to the top of the page for a specific user.
 ```
 
 ## 🙏🏻Credits
+
 This plugin is a fork of and builds upon the original work of [johnpc](https://github.com/johnpc/jellyfin-plugin-custom-javascript). Thanks to the original author for creating the foundation for this project.
 
 ## 🗒️ Note
--------------
 
 Be careful when using any custom JavaScript, as it can potentially introduce security vulnerabilities or break the Jellyfin UI. Only use code from trusted sources or code that you have written and fully understand.
+
+---
+
+<div align="center">
+
+**Made with 💜 for Jellyfin and the community**
+
+### Enjoying Jellyfin JavaScript Injector?
+
+Checkout my other repos!
+
+[Jellyfin-Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) (javascript) • [Jellyfin-Elsewhere](https://github.com/n00bcodr/Jellyfin-Elsewhere) (javascript) • [Jellyfin-Tweaks](https://github.com/n00bcodr/JellyfinTweaks) (plugin) • [Jellyfin-JavaScript-Injector](https://github.com/n00bcodr/Jellyfin-JavaScript-Injector) (plugin) • [Jellyfish](https://github.com/n00bcodr/Jellyfish/) (theme)
+
+
+</div>
