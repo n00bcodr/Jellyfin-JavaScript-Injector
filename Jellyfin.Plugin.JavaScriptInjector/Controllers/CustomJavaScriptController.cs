@@ -1,38 +1,72 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Jellyfin.Plugin.JavaScriptInjector.Configuration;
 
-namespace Jellyfin.Plugin.JavaScriptInjector.Controllers;
-
-[ApiController]
-[Route("JavaScriptInjector")]
-[AllowAnonymous] // Allow access to the script without authentication
-public class JavaScriptInjectorController : ControllerBase
+namespace Jellyfin.Plugin.JavaScriptInjector.Controllers
 {
-    [HttpGet("loader.js")]
-    [Produces("application/javascript")]
-    public ActionResult GetLoaderScript()
+    [ApiController]
+    [Route("JavaScriptInjector")]
+    public class JavaScriptInjectorController : ControllerBase
     {
-        var config = Plugin.Instance?.Configuration;
-        if (config == null)
+        /// <summary>
+        /// This endpoint provides scripts that do NOT require authentication.
+        /// It is accessible to everyone, including users on the login page.
+        /// </summary>
+        [HttpGet("public.js")]
+        [Produces("application/javascript")]
+        [AllowAnonymous]
+        public ActionResult GetPublicScript()
         {
-            return Content("/* Plugin configuration not loaded. */", "application/javascript");
+            var config = Plugin.Instance?.Configuration;
+            // Generate script content for public (non-authenticated) scripts
+            return GenerateScript(config, false);
         }
 
-        var scriptBuilder = new StringBuilder();
-        scriptBuilder.AppendLine("/* Custom JavaScript from Jellyfin Plugin */");
-
-        foreach (var scriptEntry in config.CustomJavaScripts)
+        /// <summary>
+        /// This endpoint provides scripts that DO require authentication.
+        /// The [Authorize] attribute ensures that only logged-in users can access it.
+        /// </summary>
+        [HttpGet("private.js")]
+        [Produces("application/javascript")]
+        [Authorize]
+        public ActionResult GetPrivateScript()
         {
-            if (scriptEntry.Enabled && !string.IsNullOrWhiteSpace(scriptEntry.Script))
+            var config = Plugin.Instance?.Configuration;
+            // Generate script content for private (authenticated) scripts
+            return GenerateScript(config, true);
+        }
+
+        /// <summary>
+        /// Helper method to generate the JavaScript content based on the authentication requirement.
+        /// </summary>
+        /// <param name="config">The plugin configuration.</param>
+        /// <param name="requiresAuth">A boolean indicating whether to filter for scripts that require authentication.</param>
+        /// <returns>An ActionResult containing the JavaScript code.</returns>
+        private ActionResult GenerateScript(PluginConfiguration config, bool requiresAuth)
+        {
+            if (config == null)
             {
-                scriptBuilder.AppendLine($"/* Script: {scriptEntry.Name} */");
-                scriptBuilder.AppendLine("(function() { try {");
-                scriptBuilder.AppendLine(scriptEntry.Script);
-                scriptBuilder.AppendLine("} catch (e) { console.error('Error in Injected JavaScript [\"" + scriptEntry.Name + "\"]:', e); } })();");
+                return Content("/* Plugin configuration not loaded. */", "application/javascript");
             }
-        }
 
-        return Content(scriptBuilder.ToString(), "application/javascript");
+            var scriptBuilder = new StringBuilder();
+            // Filter scripts based on whether they are enabled and match the authentication requirement
+            var scriptsToInject = config.CustomJavaScripts
+                .Where(s => s.Enabled && s.RequiresAuthentication == requiresAuth);
+
+            foreach (var scriptEntry in scriptsToInject)
+            {
+                if (!string.IsNullOrWhiteSpace(scriptEntry.Script))
+                {
+                    scriptBuilder.AppendLine($"/* Script: {scriptEntry.Name} */");
+                    scriptBuilder.AppendLine("(function() { try {");
+                    scriptBuilder.AppendLine(scriptEntry.Script);
+                    scriptBuilder.AppendLine("} catch (e) { console.error('Error in Injected JavaScript [\"" + scriptEntry.Name + "\"]:', e); } })();");
+                }
+            }
+            return Content(scriptBuilder.ToString(), "application/javascript");
+        }
     }
 }

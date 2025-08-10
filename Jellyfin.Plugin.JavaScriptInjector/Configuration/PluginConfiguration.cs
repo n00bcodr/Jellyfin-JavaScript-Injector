@@ -41,5 +41,10 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Configuration
         /// Gets or sets a value indicating whether this script is enabled.
         /// </summary>
         public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this script requires authentication to be loaded.
+        /// </summary>
+        public bool RequiresAuthentication { get; set; } = false;
     }
 }

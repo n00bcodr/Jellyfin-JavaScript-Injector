@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/icon.png",
         "versions": [
             {
+                "version": "1.1.0.0",
+                "changelog": "- Script Visibility /n - Add an option to only load a script for an authenticated session.",
+                "targetAbi": "10.9.9.0",
+                "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.0.0/javascript-injector-1.1.0.0.zip",
+                "checksum": "21817433c4aeb9d56774ff376d136240",
+                "timestamp": "2025-08-10T05:22:03Z"
+            },
+            {
                 "version": "1.0.0.0",
                 "changelog": "Support multiple scripts and dynamic injection",
                 "targetAbi": "10.9.9.0",

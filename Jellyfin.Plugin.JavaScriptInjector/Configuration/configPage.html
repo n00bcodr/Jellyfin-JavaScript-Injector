@@ -25,7 +25,7 @@
                         <br/>
                         <div class="infoBox">
                              <p class="infoBoxText">
-                                <strong>ℹ️</strong> Changes require a browser refresh to take effect.
+                                <strong>ℹ️</strong> Changes require a browser refresh to take effect. Scripts marked with 'Requires Authentication' will only be loaded for authenticated users.
                             </p>
                         </div>
 
@@ -57,6 +57,10 @@
                         <label class="emby-checkbox-label">
                             <input is="emby-checkbox" type="checkbox" class="script-enabled-checkbox" />
                             <span>Enabled</span>
+                        </label>
+                        <label class="emby-checkbox-label">
+                            <input is="emby-checkbox" type="checkbox" class="script-auth-checkbox" />
+                            <span>Requires Authentication</span>
                         </label>
                         <button is="emby-button" type="button" class="raised button-delete script-remove-btn">
                             <span>Remove</span>
@@ -95,6 +99,7 @@
                     const nameInput = clone.querySelector('.script-name-input');
                     const codeTextarea = clone.querySelector('.script-code-textarea');
                     const enabledCheckbox = clone.querySelector('.script-enabled-checkbox');
+                    const authCheckbox = clone.querySelector('.script-auth-checkbox');
                     const removeBtn = clone.querySelector('.script-remove-btn');
                     const arrowOpen = clone.querySelector('.arrow-open');
                     const arrowClosed = clone.querySelector('.arrow-closed');
@@ -104,6 +109,7 @@
                     nameInput.value = script.Name;
                     codeTextarea.value = script.Script;
                     enabledCheckbox.checked = script.Enabled;
+                    authCheckbox.checked = script.RequiresAuthentication;
 
                     // Add event listeners
                     nameInput.addEventListener('input', (e) => {
@@ -146,7 +152,8 @@
                         const name = container.querySelector('.script-name-input').value;
                         const script = container.querySelector('.script-code-textarea').value;
                         const enabled = container.querySelector('.script-enabled-checkbox').checked;
-                        scripts.push({ Name: name, Script: script, Enabled: enabled });
+                        const requiresAuthentication = container.querySelector('.script-auth-checkbox').checked;
+                        scripts.push({ Name: name, Script: script, Enabled: enabled, RequiresAuthentication: requiresAuthentication });
                     });
 
                     ApiClient.getPluginConfiguration(JavaScriptInjectorConfig.pluginId).then(function (config) {
@@ -166,7 +173,7 @@
 
                     document.querySelector('#addScriptBtn').addEventListener('click', function() {
                         const scriptsContainer = document.querySelector('#scriptsContainer');
-                        scriptsContainer.appendChild(JavaScriptInjectorConfig.createScriptEntry({ Name: 'New Script', Script: '', Enabled: true }));
+                        scriptsContainer.appendChild(JavaScriptInjectorConfig.createScriptEntry({ Name: 'New Script', Script: '', Enabled: true, RequiresAuthentication: false }));
                     });
                 }
             };
