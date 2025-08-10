@@ -35,6 +35,10 @@ namespace Jellyfin.Plugin.JavaScriptInjector.ScheduledTasks
                 return;
             }
 
+            // Define new, safe delimiters for the injection block.
+            var startComment = "<!-- BEGIN JavaScript Injector Plugin -->";
+            var endComment = "<!-- END JavaScript Injector Plugin -->";
+
             // Public scripts are loaded immediately for all users (including on the login page).
             var publicScriptTag = "<script defer src=\"/JavaScriptInjector/public.js\"></script>";
 
@@ -71,25 +75,36 @@ namespace Jellyfin.Plugin.JavaScriptInjector.ScheduledTasks
                     const authInterval = setInterval(fetchPrivateScripts, 300);
                 })();
             </script>";
-
-            var injectionBlock = $"{publicScriptTag}\n{privateScriptLoader}";
+            // The full block to be injected, now wrapped in comments.
+            var injectionBlock = $@"{startComment}
+            {publicScriptTag}
+            {privateScriptLoader}
+            {endComment}";
 
             try
             {
                 var content = await File.ReadAllTextAsync(indexPath, cancellationToken);
 
-                // This regex is designed to find and remove both the new script block and the old single script tag.
-                // This ensures a clean upgrade path for existing users.
-                // It looks for:
-                // 1. The entire new block (from the public.js script tag to the closing </script> tag of the loader).
-                // 2. The old single loader.js script tag.
-                var regex = new Regex("(<script.*JavaScriptInjector.*</script>(\\n|\\r|.)*</script>|(<script.*JavaScriptInjector/loader.js.*</script>))");
+                // --- Removal Logic ---
+                // This logic is designed to be idempotent and handle upgrades gracefully.
 
-                if (regex.IsMatch(content))
-                {
-                     content = regex.Replace(content, string.Empty).Trim();
-                }
+                // 1. Remove any blocks from this new, comment-wrapped version.
+                var newRegex = new Regex($"{startComment}[\\s\\S]*?{endComment}", RegexOptions.Multiline);
+                content = newRegex.Replace(content, string.Empty);
 
+                // 2. Remove any blocks from the previous. This regex is now much more specific
+                // and avoid consuming other plugins' scripts. (v1.1.0.0)
+                var oldRegex = new Regex("(<script defer src=\"/JavaScriptInjector/public.js\"></script>\\s*<script>[\\s\\S]*?clearInterval\\(authInterval\\);[\\s\\S]*?</script>)");
+                content = oldRegex.Replace(content, string.Empty);
+
+                // 3. Remove the original single loader.js tag for upgrades from very old versions. (v1.0.0.0)
+                var oldestRegex = new Regex("<script.*JavaScriptInjector/loader.js.*</script>");
+                content = oldestRegex.Replace(content, string.Empty);
+
+                // After all removal operations, trim whitespace from the file content.
+                content = content.Trim();
+
+                // --- Injection Logic ---
                 var closingBodyTag = "</body>";
                 if (content.Contains(closingBodyTag))
                 {
