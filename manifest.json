@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/icon.png",
         "versions": [
             {
+                "version": "1.1.1.1",
+                "changelog": "- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
+                "targetAbi": "10.9.9.0",
+                "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.1.1/javascript-injector-1.1.1.1.zip",
+                "checksum": "db8d7806b3e112ddaf40caa55fdb0f1d",
+                "timestamp": "2025-08-14T06:30:31Z"
+            },
+            {
                 "version": "1.1.1.0",
                 "changelog": "- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
                 "targetAbi": "10.9.9.0",
