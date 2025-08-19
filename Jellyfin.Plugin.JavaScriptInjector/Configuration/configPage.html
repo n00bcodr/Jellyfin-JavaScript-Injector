@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>JavaScript Injector</title>
 </head>
+
 <body>
     <div id="JavaScriptInjectorConfigPage" data-role="page" class="page type-interior pluginConfigurationPage">
         <div data-role="content">
@@ -10,25 +12,33 @@
                 <form id="JavaScriptInjectorConfigForm">
                     <div class="verticalSection verticalSection-extrabottompadding">
                         <div class="sectionTitleContainer flex align-items-center">
-                            <h2 class="sectionTitle">JavaScript Injector Settings</h2>
+                            <h2 class="sectionTitle">JavaScript Injector</h2>
+                            <a is="emby-linkbutton" class="raised raised-mini emby-button" style="margin-left: 2em;"
+                                target="_blank" href="https://github.com/n00bcodr/Jellyfin-JavaScript-Injector">
+                                <i class="md-icon button-icon button-icon-left secondaryText"></i>
+                                <span>Help</span>
+                            </a>
                         </div>
-
+                        <hr><br>
                         <div id="scriptsContainer" class="verticalSection-extrabottompadding">
-                            </div>
+                            <!-- Script entries will be dynamically inserted here -->
+                        </div>
 
                         <div class="verticalSection">
                             <button is="emby-button" type="button" id="addScriptBtn" class="raised button-submit block">
                                 <span>Add Script</span>
                             </button>
                         </div>
-
                         <br/>
-                        <div class="infoBox">
-                             <p class="infoBoxText">
-                                <strong>ℹ️</strong> Changes require a browser refresh to take effect. Scripts marked with 'Requires Authentication' will only be loaded for authenticated users.
-                            </p>
+                        <div
+                            style="background-color: rgba(255, 255, 255, 0.05); border-left: 4px solid #00a4dc; border-radius: 4px; padding: 1em 1.5em; margin: 1.5em 0; display: flex; align-items: center; gap: 1em;">
+                            <i class="material-icons" style="color: #00a4dc; font-size: 24px;">info</i>
+                            <div>
+                                Changes require a browser refresh to take effect. <br/>
+                                Scripts marked with 'Requires Authentication' will only be loaded for authenticated
+                                users.
+                            </div>
                         </div>
-
                         <div>
                             <button is="emby-button" type="submit" class="raised button-submit block">
                                 <span>Save</span>
@@ -40,18 +50,21 @@
         </div>
 
         <template id="script-entry-template">
-            <details class="verticalSection" style="border-radius: 8px; margin-bottom: 1em; box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 2px 4px rgba(0, 0, 0, 0.5); transition: box-shadow 0.3s ease;">
-                <summary style="cursor: pointer; list-style: none; display: flex; align-items: center; padding: 0.75em 1em;">
-                    <i class="material-icons arrow-closed" style="display: inline-block;">arrow_right</i>
-                    <i class="material-icons arrow-open" style="display: none;">arrow_drop_down</i>
-                    <h3 class="sectionTitle script-name-header" style="margin: 0px 0px 0px 0.5em;"></h3>
+            <details class="verticalSection"
+                style="background-color: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 1em; transition: box-shadow 0.3s ease;">
+                <summary
+                    style="cursor: pointer; list-style: none; display: flex; align-items: center; padding: 0.75em 1em;">
+                    <i class="material-icons arrow-icon" style="transition: transform 0.2s ease-in-out;">arrow_right</i>
+                    <h3 class="sectionTitle script-name-header" style="margin: 0 0 0 0.5em;"></h3>
                 </summary>
-                <div class="script-container" style="padding: 0 1.5em 1.5em 1.5em;">
+                <div class="script-container" style="padding: 1.5em; border-top: 1px solid rgba(255, 255, 255, 0.1);">
                     <div class="inputContainer">
                         <input is="emby-input" type="text" class="script-name-input" label="Script Name:" />
                     </div>
                     <div class="inputContainer">
-                        <textarea is="emby-textarea" class="script-code-textarea" label="JavaScript Code:" style="height: 300px; width: 100%;" placeholder="// Insert javascript code here"></textarea>
+                        <textarea class="script-code-textarea emby-textarea emby-input"
+                            style="height: 300px; width: 100%;"
+                            placeholder="// Insert your custom JavaScript code here..."></textarea>
                     </div>
                     <div style="display: flex; align-items: center; gap: 2em; margin-top: 1em;">
                         <label class="emby-checkbox-label">
@@ -74,7 +87,7 @@
             var JavaScriptInjectorConfig = {
                 pluginId: 'f5a34f7b-2e8a-4e6a-a722-3a216a81b374',
 
-                loadConfiguration: function() {
+                loadConfiguration: function () {
                     Dashboard.showLoadingMsg();
                     ApiClient.getPluginConfiguration(JavaScriptInjectorConfig.pluginId).then(function (config) {
                         const scriptsContainer = document.querySelector('#scriptsContainer');
@@ -85,12 +98,12 @@
                             });
                         }
                         Dashboard.hideLoadingMsg();
-                    }).catch(function() {
+                    }).catch(function () {
                         Dashboard.hideLoadingMsg();
                     });
                 },
 
-                createScriptEntry: function(script) {
+                createScriptEntry: function (script) {
                     const template = document.querySelector('#script-entry-template');
                     const clone = template.content.cloneNode(true);
 
@@ -101,8 +114,7 @@
                     const enabledCheckbox = clone.querySelector('.script-enabled-checkbox');
                     const authCheckbox = clone.querySelector('.script-auth-checkbox');
                     const removeBtn = clone.querySelector('.script-remove-btn');
-                    const arrowOpen = clone.querySelector('.arrow-open');
-                    const arrowClosed = clone.querySelector('.arrow-closed');
+                    const arrowIcon = clone.querySelector('.arrow-icon');
 
                     // Populate the cloned template with script data
                     nameHeader.textContent = script.Name;
@@ -120,32 +132,22 @@
                         detailsElement.remove();
                     });
 
-                    // Handle hover effect for box-shadow
-                    const defaultShadow = 'inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 2px 4px rgba(0, 0, 0, 0.5)';
-                    const hoverShadow = 'inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 4px 8px rgba(0, 0, 0, 0.6)';
                     detailsElement.addEventListener('mouseover', () => {
-                        detailsElement.style.boxShadow = hoverShadow;
+                        detailsElement.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.4)';
                     });
                     detailsElement.addEventListener('mouseout', () => {
-                        detailsElement.style.boxShadow = defaultShadow;
+                        detailsElement.style.boxShadow = 'none';
                     });
 
                     // Handle arrow icon switching on toggle
                     detailsElement.addEventListener('toggle', () => {
-                        if (detailsElement.open) {
-                            arrowOpen.style.display = 'inline-block';
-                            arrowClosed.style.display = 'none';
-                        } else {
-                            arrowOpen.style.display = 'none';
-                            arrowClosed.style.display = 'inline-block';
-                        }
+                        arrowIcon.style.transform = detailsElement.open ? 'rotate(90deg)' : 'rotate(0deg)';
                     });
-
 
                     return clone;
                 },
 
-                saveConfiguration: function() {
+                saveConfiguration: function () {
                     Dashboard.showLoadingMsg();
                     const scripts = [];
                     document.querySelectorAll('#scriptsContainer .script-container').forEach(container => {
@@ -164,27 +166,28 @@
                     });
                 },
 
-                registerEvents: function() {
-                    document.querySelector('#JavaScriptInjectorConfigForm').addEventListener('submit', function(e) {
+                registerEvents: function () {
+                    document.querySelector('#JavaScriptInjectorConfigForm').addEventListener('submit', function (e) {
                         e.preventDefault();
                         JavaScriptInjectorConfig.saveConfiguration();
                         return false;
                     });
 
-                    document.querySelector('#addScriptBtn').addEventListener('click', function() {
+                    document.querySelector('#addScriptBtn').addEventListener('click', function () {
                         const scriptsContainer = document.querySelector('#scriptsContainer');
                         scriptsContainer.appendChild(JavaScriptInjectorConfig.createScriptEntry({ Name: 'New Script', Script: '', Enabled: true, RequiresAuthentication: false }));
                     });
                 }
             };
 
-            document.addEventListener('pageshow', function(e) {
+            document.addEventListener('pageshow', function (e) {
                 if (e.target.id === 'JavaScriptInjectorConfigPage') {
-                   JavaScriptInjectorConfig.loadConfiguration();
-                   JavaScriptInjectorConfig.registerEvents();
+                    JavaScriptInjectorConfig.loadConfiguration();
+                    JavaScriptInjectorConfig.registerEvents();
                 }
             });
         </script>
     </div>
 </body>
+
 </html>
