@@ -30,6 +30,41 @@ The JavaScript Injector plugin for Jellyfin allows you to inject multiple, indep
 5.  Go to the **Catalog** tab, find **JavaScript Injector** in the list, and click **Install**.
 6.  **Restart** your Jellyfin server to complete the installation.
 
+#### 🐳 Docker Installation Notes
+
+> [!IMPORTANT]
+> If you are on a docker install it is highly advisable to have [file-transformation](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) at least v2.2.1.0 installed. It helps avoid permission issues while modifying index.html
+
+
+If you're running Jellyfin through Docker, the plugin may not have permission to modify jellyfin-web to inject the script. If you see permission errors such as `'System.UnauthorizedAccessException: Access to the path '/usr/share/jellyfin/web/index.html' is denied.` in your logs, you will need to map the `index.html` file manually:
+
+1. Copy the index.html file from your container:
+
+   ```bash
+   docker cp jellyfin:/usr/share/jellyfin/web/index.html /path/to/your/jellyfin/config/index.html
+   ```
+
+2. Add a volume mapping to your Docker run command:
+
+   ```yaml
+   -v /path/to/your/jellyfin/config/index.html:/usr/share/jellyfin/web/index.html
+   ```
+
+3. Or for Docker Compose, add this to your volumes section:
+   ```yaml
+   services:
+     jellyfin:
+       # ... other config
+       volumes:
+         - /path/to/your/jellyfin/config:/config
+         - /path/to/your/jellyfin/config/index.html:/usr/share/jellyfin/web/index.html
+         # ... other volumes
+   ```
+
+This gives the plugin the necessary permissions to inject JavaScript into the web interface.
+
+---
+
 
 ## 🔧 Configuration
 
@@ -129,7 +164,7 @@ Be careful when using any custom JavaScript, as it can potentially introduce sec
 
 Checkout my other repos!
 
-[Jellyfin-Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) (javascript) • [Jellyfin-Elsewhere](https://github.com/n00bcodr/Jellyfin-Elsewhere) (javascript) • [Jellyfin-Tweaks](https://github.com/n00bcodr/JellyfinTweaks) (plugin) • [Jellyfin-JavaScript-Injector](https://github.com/n00bcodr/Jellyfin-JavaScript-Injector) (plugin) • [Jellyfish](https://github.com/n00bcodr/Jellyfish/) (theme)
+[Jellyfin-Enhanced](https://github.com/n00bcodr/Jellyfin-Enhanced) (javascript/plugin) • [Jellyfin-Elsewhere](https://github.com/n00bcodr/Jellyfin-Elsewhere) (javascript) • [Jellyfin-Tweaks](https://github.com/n00bcodr/JellyfinTweaks) (plugin) • [Jellyfin-JavaScript-Injector](https://github.com/n00bcodr/Jellyfin-JavaScript-Injector) (plugin) • [Jellyfish](https://github.com/n00bcodr/Jellyfish/) (theme)
 
 
 </div>

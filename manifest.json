@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/icon.png",
         "versions": [
             {
+                "version": "2.0.0.0",
+                "changelog": "- Use [file-transformation-plugin](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) to 'inject' javascript without modifying index.html\n - This is to help with all the permission issues for docker installs.\n - Fallback if file-transformation-plugin is not installed to the regular index.html modification\n",
+                "targetAbi": "10.9.9.0",
+                "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/2.0.0.0/javascript-injector-2.0.0.0.zip",
+                "checksum": "89c5e8c0d140e8fcb8826202b1b91de8",
+                "timestamp": "2025-08-19T13:27:21Z"
+            },
+            {
                 "version": "1.1.1.1",
                 "changelog": "- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
                 "targetAbi": "10.9.9.0",

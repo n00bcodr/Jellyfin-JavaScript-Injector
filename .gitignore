@@ -344,3 +344,4 @@ healthchecksdb
 .DS_Store
 
 *.zip
+build.sh
