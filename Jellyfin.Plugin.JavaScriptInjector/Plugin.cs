@@ -24,7 +24,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector
             _logger = logger;
         }
 
-        public static Plugin Instance { get; private set; }
+        public static Plugin? Instance { get; private set; }
 
         public override string Name => "JavaScript Injector";
 

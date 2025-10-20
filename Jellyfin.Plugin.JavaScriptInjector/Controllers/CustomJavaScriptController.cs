@@ -20,6 +20,10 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Controllers
         public ActionResult GetPublicScript()
         {
             var config = Plugin.Instance?.Configuration;
+            if (config == null)
+            {
+                return Content("/* Plugin configuration not loaded. */", "application/javascript");
+            }
             // Generate script content for public (non-authenticated) scripts
             return GenerateScript(config, false);
         }
@@ -34,6 +38,10 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Controllers
         public ActionResult GetPrivateScript()
         {
             var config = Plugin.Instance?.Configuration;
+            if (config == null)
+            {
+                return Content("/* Plugin configuration not loaded. */", "application/javascript");
+            }
             // Generate script content for private (authenticated) scripts
             return GenerateScript(config, true);
         }

@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Jellyfin.Plugin.JavaScriptInjector.Helpers;
+using Jellyfin.Plugin.JavaScriptInjector.JellyfinVersionSpecific;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Model.Tasks;
 using Microsoft.Extensions.Logging;
@@ -86,7 +87,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Services
                 {
                     var payload = new JObject
                     {
-                        { "id", Plugin.Instance.Id.ToString() },
+                        { "id", Plugin.Instance?.Id.ToString() },
                         { "fileNamePattern", "index.html" },
                         { "callbackAssembly", GetType().Assembly.FullName },
                         { "callbackClass", typeof(TransformationPatches).FullName },
@@ -99,22 +100,22 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Services
                 else
                 {
                     _logger.LogWarning("Could not find PluginInterface in FileTransformation assembly. Using fallback injection method.");
-                    Plugin.Instance?.InjectScript();
+                    if (Plugin.Instance != null)
+                    {
+                        Plugin.Instance.InjectScript();
+                    }
                 }
             }
             else
             {
                 _logger.LogWarning("File Transformation plugin not found. Using fallback injection method.");
-                Plugin.Instance?.InjectScript();
+                if (Plugin.Instance != null)
+                {
+                    Plugin.Instance.InjectScript();
+                }
             }
         }
 
-        public IEnumerable<TaskTriggerInfo> GetDefaultTriggers()
-        {
-            yield return new TaskTriggerInfo
-            {
-                Type = TaskTriggerInfo.TriggerStartup
-            };
-        }
+        public IEnumerable<TaskTriggerInfo> GetDefaultTriggers() => StartupServiceHelper.GetDefaultTriggers();
     }
 }
