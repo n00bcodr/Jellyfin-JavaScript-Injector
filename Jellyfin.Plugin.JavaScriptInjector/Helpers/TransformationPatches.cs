@@ -14,7 +14,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Helpers
             var startComment = "<!-- BEGIN JavaScript Injector Plugin -->";
             var endComment = "<!-- END JavaScript Injector Plugin -->";
             // Public scripts are loaded immediately for all users (including on the login page).
-            var publicScriptTag = "<script defer src=\"/JavaScriptInjector/public.js\"></script>";
+            var publicScriptTag = "<script defer src=\"JavaScriptInjector/public.js\"></script>";
             // This inline script waits for the user to be authenticated and then fetches the private scripts.
             // It uses the official ApiClient.fetch method, which automatically includes authentication headers.
             var privateScriptLoader = @"
