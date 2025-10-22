@@ -9,6 +9,14 @@
     "imageUrl": "https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/icon.png",
     "versions": [
       {
+        "changelog": "- Fix script path for installations with base url\n - Please remove this manifest and add the manifest for 10.11 if you are on 10.11. \n https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json ",
+        "targetAbi": "10.10.7.0",
+        "version": "3.0.1.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.0.1.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
+        "checksum": "A7240CC2FAA7E4F76F67A4C5B7AD161C",
+        "timestamp": "2025-10-22T05:38:30"
+      },
+      {
         "changelog": "- 10.11 Support!\n - Please add the manifest for 10.11 if you are on 10.11. https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json ",
         "targetAbi": "10.10.7.0",
         "version": "3.0.0.0",
