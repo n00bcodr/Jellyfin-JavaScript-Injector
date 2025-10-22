@@ -1,61 +1,61 @@
 [
-    {
-        "guid": "f5a34f7b-2e8a-4e6a-a722-3a216a81b374",
-        "name": "JavaScript Injector",
-        "overview": "Inject custom javascript(s) to the Jellyfin Web UI",
-        "description": "Inject custom javascript(s) to the Jellyfin Web UI",
-        "owner": "n00bcodr",
-        "category": "General",
-        "imageUrl": "https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/icon.png",
-        "versions": [
-            {
-                "changelog": "- 10.11 Support!\n - Please add the manifest for 10.11 if you are on 10.11. https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json ",
-                "targetAbi": "10.10.7.0",
-                "version": "3.0.0.0",
-                "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/3.0.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
-                "checksum": "EFFE2518CF1AC58C69A24A2934EDD9ED",
-                "timestamp": "2025-10-20T17:27:00"
-            },
-            {
-                "version": "2.0.0.0",
-                "changelog": "- Use [file-transformation-plugin](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) to 'inject' javascript without modifying index.html\n - This is to help with all the permission issues for docker installs.\n - Fallback if file-transformation-plugin is not installed to the regular index.html modification\n",
-                "targetAbi": "10.9.9.0",
-                "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/2.0.0.0/javascript-injector-2.0.0.0.zip",
-                "checksum": "89c5e8c0d140e8fcb8826202b1b91de8",
-                "timestamp": "2025-08-19T13:27:21Z"
-            },
-            {
-                "version": "1.1.1.1",
-                "changelog": "- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
-                "targetAbi": "10.9.9.0",
-                "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.1.1/javascript-injector-1.1.1.1.zip",
-                "checksum": "db8d7806b3e112ddaf40caa55fdb0f1d",
-                "timestamp": "2025-08-14T06:30:31Z"
-            },
-            {
-                "version": "1.1.1.0",
-                "changelog": "- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
-                "targetAbi": "10.9.9.0",
-                "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.1.0/javascript-injector-1.1.1.0.zip",
-                "checksum": "39620ac480c10a6a68a7a6fdf2c93990",
-                "timestamp": "2025-08-12T04:44:41Z"
-            },
-            {
-                "version": "1.1.0.0",
-                "changelog": "- Script Visibility \n - Add an option to only load a script for an authenticated session.",
-                "targetAbi": "10.9.9.0",
-                "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.0.0/javascript-injector-1.1.0.0.zip",
-                "checksum": "21817433c4aeb9d56774ff376d136240",
-                "timestamp": "2025-08-10T05:22:03Z"
-            },
-            {
-                "version": "1.0.0.0",
-                "changelog": "Support multiple scripts and dynamic injection",
-                "targetAbi": "10.9.9.0",
-                "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.0.0.0/javascript-injector-1.0.0.0.zip",
-                "checksum": "eb340151e6d2c29690ced20740fba52e",
-                "timestamp": "2025-07-30T13:17:02Z"
-            }
-        ]
-    }
+  {
+    "guid": "f5a34f7b-2e8a-4e6a-a722-3a216a81b374",
+    "name": "JavaScript Injector",
+    "overview": "Inject custom javascript(s) to the Jellyfin Web UI",
+    "description": "Inject custom javascript(s) to the Jellyfin Web UI",
+    "owner": "n00bcodr",
+    "category": "General",
+    "imageUrl": "https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/icon.png",
+    "versions": [
+      {
+        "changelog": "- 10.11 Support!\n - Please add the manifest for 10.11 if you are on 10.11. https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json ",
+        "targetAbi": "10.10.7.0",
+        "version": "3.0.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/3.0.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
+        "checksum": "EFFE2518CF1AC58C69A24A2934EDD9ED",
+        "timestamp": "2025-10-20T17:27:00"
+      },
+      {
+        "version": "2.0.0.0",
+        "changelog": "- Use [file-transformation-plugin](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) to 'inject' javascript without modifying index.html\n - This is to help with all the permission issues for docker installs.\n - Fallback if file-transformation-plugin is not installed to the regular index.html modification\n",
+        "targetAbi": "10.9.9.0",
+        "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/2.0.0.0/javascript-injector-2.0.0.0.zip",
+        "checksum": "89c5e8c0d140e8fcb8826202b1b91de8",
+        "timestamp": "2025-08-19T13:27:21Z"
+      },
+      {
+        "version": "1.1.1.1",
+        "changelog": "- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
+        "targetAbi": "10.9.9.0",
+        "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.1.1/javascript-injector-1.1.1.1.zip",
+        "checksum": "db8d7806b3e112ddaf40caa55fdb0f1d",
+        "timestamp": "2025-08-14T06:30:31Z"
+      },
+      {
+        "version": "1.1.1.0",
+        "changelog": "- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
+        "targetAbi": "10.9.9.0",
+        "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.1.0/javascript-injector-1.1.1.0.zip",
+        "checksum": "39620ac480c10a6a68a7a6fdf2c93990",
+        "timestamp": "2025-08-12T04:44:41Z"
+      },
+      {
+        "version": "1.1.0.0",
+        "changelog": "- Script Visibility \n - Add an option to only load a script for an authenticated session.",
+        "targetAbi": "10.9.9.0",
+        "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.0.0/javascript-injector-1.1.0.0.zip",
+        "checksum": "21817433c4aeb9d56774ff376d136240",
+        "timestamp": "2025-08-10T05:22:03Z"
+      },
+      {
+        "version": "1.0.0.0",
+        "changelog": "Support multiple scripts and dynamic injection",
+        "targetAbi": "10.9.9.0",
+        "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.0.0.0/javascript-injector-1.0.0.0.zip",
+        "checksum": "eb340151e6d2c29690ced20740fba52e",
+        "timestamp": "2025-07-30T13:17:02Z"
+      }
+    ]
+  }
 ]
