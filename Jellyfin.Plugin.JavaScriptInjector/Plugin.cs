@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using Jellyfin.Plugin.JavaScriptInjector.Configuration;
+using Jellyfin.Plugin.JavaScriptInjector.Helpers;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
@@ -41,48 +42,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector
                 return;
             }
 
-            var startComment = "<!-- BEGIN JavaScript Injector Plugin -->";
-            var endComment = "<!-- END JavaScript Injector Plugin -->";
-            // Public scripts are loaded immediately for all users (including on the login page).
-            var publicScriptTag = "<script defer src=\"../JavaScriptInjector/public.js\"></script>";
-            // This inline script waits for the user to be authenticated and then fetches the private scripts.
-            // It uses the official ApiClient.fetch method, which automatically includes authentication headers.
-            var privateScriptLoader = @"
-            <script>
-                (function() {
-                    'use strict';
-                    const fetchPrivateScripts = () => {
-                        // Check if the API client is fully initialized and a user is logged in.
-                        if (window.ApiClient && typeof window.ApiClient.getCurrentUserId === 'function' && window.ApiClient.getCurrentUserId() && window.ApiClient.serverInfo) {
-                            // Once authenticated, stop checking.
-                            clearInterval(authInterval);
-                            // Use the built-in ApiClient.fetch to make an authenticated request for the private scripts.
-                            ApiClient.fetch({
-                                url: ApiClient.getUrl('JavaScriptInjector/private.js'),
-                                type: 'GET',
-                                dataType: 'text'
-                            }).then(scriptText => {
-                                if (scriptText && scriptText.trim().length > 0) {
-                                    const scriptElement = document.createElement('script');
-                                    scriptElement.textContent = scriptText;
-                                    document.head.appendChild(scriptElement);
-                                    console.log('JavaScript Injector: Private scripts loaded successfully.');
-                                }
-                            }).catch(err => {
-                                console.error('JavaScript Injector: Failed to load private scripts.', err);
-                            });
-                        }
-                    };
-                    // Set an interval to check for authentication status every 300 milliseconds.
-                    const authInterval = setInterval(fetchPrivateScripts, 300);
-                })();
-            </script>";
-            // The full block to be injected, wrapped in comments.
-            var injectionBlock = $@"{startComment}
-            <!-- Injected into index.html -->
-            {publicScriptTag}
-            {privateScriptLoader}
-            {endComment}";
+            var injectionBlock = JavascriptHelper.BuildInjectionBlock();
 
             try
             {
@@ -97,7 +57,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector
                 // This logic is designed to be idempotent and handle upgrades gracefully.
 
                 // 1. Remove any blocks from this new, comment-wrapped version.
-                var newRegex = new Regex($"{startComment}[\\s\\S]*?{endComment}", RegexOptions.Multiline);
+                var newRegex = new Regex($"{JavascriptHelper.StartComment}[\\s\\S]*?{JavascriptHelper.EndComment}", RegexOptions.Multiline);
                 content = newRegex.Replace(content, string.Empty);
 
                 var closingBodyTag = "</body>";
@@ -130,9 +90,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector
                 }
 
                 var content = File.ReadAllText(indexPath);
-                var startComment = "<!-- BEGIN JavaScript Injector Plugin -->";
-                var endComment = "<!-- END JavaScript Injector Plugin -->";
-                var newRegex = new Regex($"{startComment}[\\s\\S]*?{endComment}\\s*", RegexOptions.Multiline);
+                var newRegex = new Regex($"{JavascriptHelper.StartComment}[\\s\\S]*?{JavascriptHelper.EndComment}\\s*", RegexOptions.Multiline);
                 if (newRegex.IsMatch(content))
                 {
                     content = newRegex.Replace(content, string.Empty);
