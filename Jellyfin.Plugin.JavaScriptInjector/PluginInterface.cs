@@ -64,25 +64,24 @@ namespace Jellyfin.Plugin.JavaScriptInjector
                     return false;
                 }
 
-                // Validate the payload
-                var (isValid, errorMessage) = ValidatePayload(castedPayload);
-                if (!isValid)
-                {
-                    logger?.LogError("Failed to register JavaScript script. Error: {ErrorMessage}", errorMessage);
-                    return false;
-                }
-
                 // Register the script using the service
-                registrationService.RegisterScript(castedPayload);
+                var result = registrationService.RegisterScript(castedPayload);
 
-                logger?.LogInformation(
+                if (result)
+                {
+                    logger?.LogInformation(
                     "Successfully registered JavaScript script '{ScriptName}' (ID: {ScriptId}) from plugin '{PluginName}' (ID: {PluginId})",
                     castedPayload.Name,
                     castedPayload.Id,
                     castedPayload.PluginName,
                     castedPayload.PluginId);
+                }
+                else
+                {
+                    logger?.LogError("Failed to register script {ScriptId} from plugin {PluginName}", castedPayload.Id, castedPayload.PluginName);
+                }
 
-                return true;
+                return result;
             }
             catch (Exception ex)
             {
@@ -174,40 +173,6 @@ namespace Jellyfin.Plugin.JavaScriptInjector
                 logger?.LogError(ex, "Error occurred while unregistering scripts from plugin {PluginId}: {ErrorMessage}", pluginId, ex.Message);
                 return 0;
             }
-        }
-
-        /// <summary>
-        /// Validates the script registration payload.
-        /// </summary>
-        /// <param name="payload">The payload to validate.</param>
-        /// <exception cref="ArgumentException">Thrown when validation fails.</exception>
-        private static (bool IsValid, string ErrorMessage) ValidatePayload(JavaScriptRegistrationPayload payload)
-        {
-            if (string.IsNullOrWhiteSpace(payload.Id))
-            {
-                return (false, "Script ID is required and cannot be empty.");
-            }
-
-            if (string.IsNullOrWhiteSpace(payload.Name))
-            {
-                return (false, "Script name is required and cannot be empty.");
-            }
-
-            if (string.IsNullOrWhiteSpace(payload.Script))
-            {
-                return (false, "Script content is required and cannot be empty.");
-            }
-
-            if (string.IsNullOrWhiteSpace(payload.PluginId))
-            {
-                return (false, "Plugin ID is required and cannot be empty.");
-            }
-
-            if (string.IsNullOrWhiteSpace(payload.PluginName))
-            {
-                return (false, "Plugin name is required and cannot be empty.");
-            }
-            return (true, string.Empty);
         }
     }
 }
