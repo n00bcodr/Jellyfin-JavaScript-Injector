@@ -10,6 +10,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector
         public void RegisterServices(IServiceCollection serviceCollection, IServerApplicationHost applicationHost)
         {
             serviceCollection.AddSingleton<StartupService>();
+            serviceCollection.AddSingleton<IJavaScriptRegistrationService, JavaScriptRegistrationService>();
         }
     }
 }

@@ -17,15 +17,18 @@ namespace Jellyfin.Plugin.JavaScriptInjector
         private readonly IApplicationPaths _appPaths;
         private readonly ILogger<Plugin> _logger;
 
-        public Plugin(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, ILogger<Plugin> logger)
+        public Plugin(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, ILogger<Plugin> logger, IServiceProvider serviceProvider)
             : base(applicationPaths, xmlSerializer)
         {
             Instance = this;
             _appPaths = applicationPaths;
             _logger = logger;
+            ServiceProvider = serviceProvider;
         }
 
         public static Plugin? Instance { get; private set; }
+
+        public IServiceProvider ServiceProvider { get; }
 
         public override string Name => "JavaScript Injector";
 

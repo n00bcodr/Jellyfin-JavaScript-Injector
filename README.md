@@ -19,6 +19,7 @@ The JavaScript Injector plugin for Jellyfin allows you to inject multiple, indep
 
 -   **Immediate Injection**: The plugin injects a loader script into the Jellyfin web UI upon server startup. Your custom scripts are loaded dynamically, and changes take effect after a simple browser refresh.
 
+-   **Plugin Support**: Other plugins can register their own JavaScript snippets programmatically using the provided service interface.
 
 ## ⚙️ Installation
 
@@ -144,6 +145,108 @@ This script adds a banner to the top of the page for a specific user.
     }, 300);
 })();
 
+```
+
+## 🔌 Plugin Interface
+
+Other Jellyfin plugins can programmatically register JavaScript snippets using the `IJavaScriptRegistrationService` interface. Here's an example of how to use it:
+
+```csharp
+using System.Reflection;
+using System.Runtime.Loader;
+using Newtonsoft.Json.Linq;
+
+public class YourPlugin : BasePlugin
+{
+    public void RegisterYourScript()
+    {
+        try
+        {
+            // Find the JavaScript Injector assembly
+            Assembly? jsInjectorAssembly = AssemblyLoadContext.All
+                .SelectMany(x => x.Assemblies)
+                .FirstOrDefault(x => x.FullName?.Contains("Jellyfin.Plugin.JavaScriptInjector") ?? false);
+
+            if (jsInjectorAssembly != null)
+            {
+                // Get the PluginInterface type
+                Type? pluginInterfaceType = jsInjectorAssembly.GetType("Jellyfin.Plugin.JavaScriptInjector.PluginInterface");
+
+                if (pluginInterfaceType != null)
+                {
+                    // Create the registration payload
+                    var scriptRegistration = new JObject
+                    {
+                        { "id", $"{Id}-my-script" }, // Unique ID for your script
+                        { "name", "My Custom Script" },
+                        { "script", @"
+                            // Your JavaScript code here
+                            console.log('Hello from my plugin!');
+                        " },
+                        { "enabled", true },
+                        { "requiresAuthentication", false }, // Set to true if script should only run for logged-in users
+                        { "pluginId", Id.ToString() },
+                        { "pluginName", Name },
+                        { "pluginVersion", Version.ToString() }
+                    };
+
+                    // Register the script
+                    var registerResult =pluginInterfaceType.GetMethod("RegisterScript")?.Invoke(null, new object[] { scriptRegistration });
+
+                    if (registerResult is bool success && success)
+                    {
+                        _logger.LogInformation("Successfully registered JavaScript with JavaScript Injector plugin.");
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to register JavaScript with JavaScript Injector plugin. RegisterScript returned false.");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to register JavaScript with JavaScript Injector plugin.");
+        }
+    }
+
+    public void UnregisterYourScripts()
+    {
+        try
+        {
+            // Find the JavaScript Injector assembly
+            Assembly? jsInjectorAssembly = AssemblyLoadContext.All
+                .SelectMany(x => x.Assemblies)
+                .FirstOrDefault(x => x.FullName?.Contains("Jellyfin.Plugin.JavaScriptInjector") ?? false);
+
+            if (jsInjectorAssembly != null)
+            {
+                Type? pluginInterfaceType = jsInjectorAssembly.GetType("Jellyfin.Plugin.JavaScriptInjector.PluginInterface");
+
+                if (pluginInterfaceType != null)
+                {
+                    var unregisterResult = pluginInterfaceType.GetMethod("UnregisterAllScriptsFromPlugin")?.Invoke(null, new object[] { Id.ToString() });
+
+                    // or if you want to unregister a specific script
+                    //pluginInterfaceType.GetMethod("UnregisterScript")?.Invoke(null, new object[] { $"{Id}-my-script" }); // -> returns bool, so adjust the result handling accordingly
+
+                    if (unregisterResult is int removedCount)
+                    {
+                        _logger?.LogInformation("Successfully unregistered {Count} script(s) from JavaScript Injector plugin.", removedCount);
+                    }
+                    else
+                    {
+                        _logger?.LogWarning("Failed to unregister scripts from JavaScript Injector plugin. Method returned unexpected value.");
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Failed to unregister JavaScript scripts.");
+        }
+    }
+}
 ```
 
 ## 🙏🏻Credits

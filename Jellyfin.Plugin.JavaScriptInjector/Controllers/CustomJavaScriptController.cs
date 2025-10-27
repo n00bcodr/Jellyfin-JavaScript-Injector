@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Text;
 using System.Linq;
-using Microsoft.AspNetCore.Authorization;
+using System.Text;
 using Jellyfin.Plugin.JavaScriptInjector.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Jellyfin.Plugin.JavaScriptInjector.Controllers
 {
@@ -60,20 +60,37 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Controllers
             }
 
             var scriptBuilder = new StringBuilder();
-            // Filter scripts based on whether they are enabled and match the authentication requirement
-            var scriptsToInject = config.CustomJavaScripts
+
+            // Filter user scripts based on whether they are enabled and match the authentication requirement
+            var userScriptsToInject = config.CustomJavaScripts
                 .Where(s => s.Enabled && s.RequiresAuthentication == requiresAuth);
 
-            foreach (var scriptEntry in scriptsToInject)
+            foreach (var scriptEntry in userScriptsToInject)
             {
                 if (!string.IsNullOrWhiteSpace(scriptEntry.Script))
                 {
-                    scriptBuilder.AppendLine($"/* Script: {scriptEntry.Name} */");
+                    scriptBuilder.AppendLine($"/* User Script: {scriptEntry.Name} */");
                     scriptBuilder.AppendLine("(function() { try {");
                     scriptBuilder.AppendLine(scriptEntry.Script);
                     scriptBuilder.AppendLine("} catch (e) { console.error('Error in Injected JavaScript [\"" + scriptEntry.Name + "\"]:', e); } })();");
                 }
             }
+
+            // Filter plugin scripts based on whether they are enabled and match the authentication requirement
+            var pluginScriptsToInject = config.PluginJavaScripts
+                .Where(s => s.Enabled && s.RequiresAuthentication == requiresAuth);
+
+            foreach (var scriptEntry in pluginScriptsToInject)
+            {
+                if (!string.IsNullOrWhiteSpace(scriptEntry.Script))
+                {
+                    scriptBuilder.AppendLine($"/* Plugin Script: {scriptEntry.Name} (from {scriptEntry.PluginName}) */");
+                    scriptBuilder.AppendLine("(function() { try {");
+                    scriptBuilder.AppendLine(scriptEntry.Script);
+                    scriptBuilder.AppendLine("} catch (e) { console.error('Error in Plugin JavaScript [\"" + scriptEntry.Name + "\" from \"" + scriptEntry.PluginName + "\"]:', e); } })();");
+                }
+            }
+
             return Content(scriptBuilder.ToString(), "application/javascript");
         }
     }
