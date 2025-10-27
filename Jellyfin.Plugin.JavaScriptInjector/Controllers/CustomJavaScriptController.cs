@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text;
 using Jellyfin.Plugin.JavaScriptInjector.Configuration;
 using Microsoft.AspNetCore.Authorization;
