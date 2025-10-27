@@ -191,7 +191,7 @@ public class YourPlugin : BasePlugin
                     };
 
                     // Register the script
-                    var registerResult =pluginInterfaceType.GetMethod("RegisterScript")?.Invoke(null, new object[] { scriptRegistration });
+                    var registerResult = pluginInterfaceType.GetMethod("RegisterScript")?.Invoke(null, new object[] { scriptRegistration });
 
                     if (registerResult is bool success && success)
                     {
