@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using MediaBrowser.Model.Plugins;
 
 namespace Jellyfin.Plugin.JavaScriptInjector.Configuration

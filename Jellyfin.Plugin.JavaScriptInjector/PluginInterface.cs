@@ -1,7 +1,4 @@
 #nullable enable
-using System;
-using System.Linq;
-using Jellyfin.Plugin.JavaScriptInjector.Configuration;
 using Jellyfin.Plugin.JavaScriptInjector.Model;
 using Jellyfin.Plugin.JavaScriptInjector.Services;
 using Microsoft.Extensions.DependencyInjection;
