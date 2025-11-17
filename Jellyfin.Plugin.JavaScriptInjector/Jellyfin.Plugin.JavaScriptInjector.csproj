@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <JellyfinVersion>10.11.0</JellyfinVersion>
-    <TargetFramework Condition="$(JellyfinVersion.StartsWith('10.11.0'))">net9.0</TargetFramework>
+    <JellyfinVersion>10.11.2</JellyfinVersion>
+    <TargetFramework Condition="$(JellyfinVersion.StartsWith('10.11.'))">net9.0</TargetFramework>
     <TargetFramework Condition="'$(JellyfinVersion)' == '10.10.7'">net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -22,7 +22,7 @@
       <Compile Remove="JellyfinVersionSpecific/10.10.7/*.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition="!$(JellyfinVersion.StartsWith('10.11.0'))">
+  <ItemGroup Condition="!$(JellyfinVersion.StartsWith('10.11.'))">
       <Compile Remove="JellyfinVersionSpecific/10.11.0/*.cs" />
   </ItemGroup>
 
