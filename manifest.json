@@ -9,6 +9,14 @@
     "imageUrl": "https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/icon.png",
     "versions": [
       {
+        "changelog": "- Revise repository URL instructions in README\n - refactor: create javascript helper\n - feat: add plugin interface\n - chore: remove unused imports\n - fix: dont validate payload in plugin interface\n - docs: fix example formatting",
+        "targetAbi": "10.10.7.0",
+        "version": "3.1.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.1.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
+        "checksum": "CA3DF0B83C5150146A6E1477E62757D0",
+        "timestamp": "2025-11-19T19:19:13"
+      },
+      {
         "changelog": "- Fix script path for installations with base url\n - Please remove this manifest and add the manifest for 10.11 if you are on 10.11. \n https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json ",
         "targetAbi": "10.10.7.0",
         "version": "3.0.1.0",

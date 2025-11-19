@@ -1,3 +1,6 @@
+using MediaBrowser.Model.Tasks;
+using System.Collections.Generic;
+
 namespace Jellyfin.Plugin.JavaScriptInjector.JellyfinVersionSpecific
 {
     public static class StartupServiceHelper
