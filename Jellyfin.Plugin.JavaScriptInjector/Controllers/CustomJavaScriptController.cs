@@ -16,7 +16,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Controllers
         [HttpGet("public.js")]
         [Produces("application/javascript")]
         [AllowAnonymous]
-        public ActionResult GetPublicScript()
+        public ActionResult GetPublicScript([FromQuery] string? v = null)
         {
             var config = Plugin.Instance?.Configuration;
             if (config == null)
@@ -34,7 +34,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Controllers
         [HttpGet("private.js")]
         [Produces("application/javascript")]
         [Authorize]
-        public ActionResult GetPrivateScript()
+        public ActionResult GetPrivateScript([FromQuery] string? v = null)
         {
             var config = Plugin.Instance?.Configuration;
             if (config == null)
