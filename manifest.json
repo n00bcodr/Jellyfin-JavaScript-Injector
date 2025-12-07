@@ -9,6 +9,14 @@
     "imageUrl": "https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/icon.png",
     "versions": [
       {
+        "changelog": "- Implement timestamp cache-busting",
+        "targetAbi": "10.10.7.0",
+        "version": "3.2.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.2.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
+        "checksum": "E981E78A61AAA5BE266167A273A29446",
+        "timestamp": "2025-12-07T10:05:55"
+      },
+      {
         "changelog": "- Revise repository URL instructions in README\n - refactor: create javascript helper\n - feat: add plugin interface\n - chore: remove unused imports\n - fix: dont validate payload in plugin interface\n - docs: fix example formatting",
         "targetAbi": "10.10.7.0",
         "version": "3.1.0.0",
