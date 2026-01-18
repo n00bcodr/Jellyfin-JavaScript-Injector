@@ -100,13 +100,48 @@
               list-style: none;
               display: flex;
               align-items: center;
+              justify-content: space-between;
               padding: 0.75em 1em;
             "
           >
-            <i class="material-icons arrow-icon" style="transition: transform 0.2s ease-in-out"
-              >arrow_right</i
-            >
-            <h3 class="sectionTitle script-name-header" style="margin: 0 0 0 0.5em"></h3>
+            <div style="display: flex; align-items: center;">
+              <i class="material-icons arrow-icon" style="transition: transform 0.2s ease-in-out"
+                >arrow_right</i
+              >
+              <h3 class="sectionTitle script-name-header" style="margin: 0 0 0 0.5em"></h3>
+            </div>
+            <div class="script-quick-actions" style="display: flex; align-items: center; gap: 0.5em;">
+              <button 
+                is="emby-button" 
+                type="button" 
+                class="script-quick-enable-btn"
+                style="
+                  background: none; 
+                  border: none; 
+                  padding: 0.25em; 
+                  min-height: auto;
+                  color: #52b54b;
+                "
+                title="Toggle Enable/Disable"
+              >
+                <i class="material-icons" style="font-size: 20px;">check_box</i>
+              </button>
+              <button 
+                is="emby-button" 
+                type="button" 
+                class="script-quick-remove-btn"
+                style="
+                  background: none; 
+                  border: none; 
+                  padding: 0.25em; 
+                  min-height: auto;
+                  color: #cc3333;
+                "
+                title="Remove Script"
+              >
+                <i class="material-icons" style="font-size: 20px;">delete</i>
+              </button>
+            </div>
           </summary>
           <div
             class="script-container"
@@ -155,13 +190,48 @@
               list-style: none;
               display: flex;
               align-items: center;
+              justify-content: space-between;
               padding: 0.75em 1em;
             "
           >
-            <i class="material-icons arrow-icon" style="transition: transform 0.2s ease-in-out"
-              >arrow_right</i
-            >
-            <h3 class="sectionTitle plugin-script-name-header" style="margin: 0 0 0 0.5em"></h3>
+            <div style="display: flex; align-items: center;">
+              <i class="material-icons arrow-icon" style="transition: transform 0.2s ease-in-out"
+                >arrow_right</i
+              >
+              <h3 class="sectionTitle plugin-script-name-header" style="margin: 0 0 0 0.5em"></h3>
+            </div>
+            <div class="plugin-script-quick-actions" style="display: flex; align-items: center; gap: 0.5em;">
+              <button 
+                is="emby-button" 
+                type="button" 
+                class="plugin-script-quick-enable-btn"
+                style="
+                  background: none; 
+                  border: none; 
+                  padding: 0.25em; 
+                  min-height: auto;
+                  color: #52b54b;
+                "
+                title="Toggle Enable/Disable"
+              >
+                <i class="material-icons" style="font-size: 20px;">check_box</i>
+              </button>
+              <button 
+                is="emby-button" 
+                type="button" 
+                class="plugin-script-quick-remove-btn"
+                style="
+                  background: none; 
+                  border: none; 
+                  padding: 0.25em; 
+                  min-height: auto;
+                  color: #cc3333;
+                "
+                title="Delete Script"
+              >
+                <i class="material-icons" style="font-size: 20px;">delete</i>
+              </button>
+            </div>
           </summary>
           <div
             class="plugin-script-container"
@@ -278,6 +348,8 @@
             const authCheckbox = clone.querySelector(".script-auth-checkbox");
             const removeBtn = clone.querySelector(".script-remove-btn");
             const arrowIcon = clone.querySelector(".arrow-icon");
+            const quickEnableBtn = clone.querySelector(".script-quick-enable-btn");
+            const quickRemoveBtn = clone.querySelector(".script-quick-remove-btn");
 
             // Populate the cloned template with script data
             nameHeader.textContent = script.Name;
@@ -286,13 +358,47 @@
             enabledCheckbox.checked = script.Enabled;
             authCheckbox.checked = script.RequiresAuthentication;
 
+            // Update quick enable button icon based on enabled state
+            const updateQuickEnableIcon = () => {
+              const icon = quickEnableBtn.querySelector('.material-icons');
+              if (enabledCheckbox.checked) {
+                icon.textContent = 'check_box';
+                quickEnableBtn.style.color = '#52b54b';
+              } else {
+                icon.textContent = 'check_box_outline_blank';
+                quickEnableBtn.style.color = '#888';
+              }
+            };
+            updateQuickEnableIcon();
+
             // Add event listeners
             nameInput.addEventListener("input", (e) => {
               nameHeader.textContent = e.target.value || "New Script";
             });
 
+            enabledCheckbox.addEventListener("change", updateQuickEnableIcon);
+
+            quickEnableBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              enabledCheckbox.checked = !enabledCheckbox.checked;
+              updateQuickEnableIcon();
+            });
+
+            quickRemoveBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const scriptName = nameInput.value || script.Name || "New Script";
+              if (confirm("Are you sure you want to remove the script \"" + scriptName + "\"?")) {
+                detailsElement.remove();
+              }
+            });
+
             removeBtn.addEventListener("click", () => {
-              detailsElement.remove();
+              const scriptName = nameInput.value || script.Name || "New Script";
+              if (confirm("Are you sure you want to remove the script \"" + scriptName + "\"?")) {
+                detailsElement.remove();
+              }
             });
 
             // Handle arrow icon switching on toggle
@@ -317,6 +423,8 @@
             const pluginName = clone.querySelector(".plugin-name");
             const pluginVersion = clone.querySelector(".plugin-version");
             const pluginScriptId = clone.querySelector(".plugin-script-id");
+            const quickEnableBtn = clone.querySelector(".plugin-script-quick-enable-btn");
+            const quickRemoveBtn = clone.querySelector(".plugin-script-quick-remove-btn");
 
             // Populate the cloned template with script data
             nameHeader.textContent = script.Name;
@@ -330,6 +438,19 @@
             // Store the script ID for deletion
             detailsElement.setAttribute("data-script-id", script.Id);
 
+            // Update quick enable button icon based on enabled state
+            const updateQuickEnableIcon = () => {
+              const icon = quickEnableBtn.querySelector('.material-icons');
+              if (enabledCheckbox.checked) {
+                icon.textContent = 'check_box';
+                quickEnableBtn.style.color = '#52b54b';
+              } else {
+                icon.textContent = 'check_box_outline_blank';
+                quickEnableBtn.style.color = '#888';
+              }
+            };
+            updateQuickEnableIcon();
+
             // Add event listeners
             enabledCheckbox.addEventListener("change", () => {
               // Update the enabled state in the configuration immediately
@@ -337,12 +458,36 @@
                 script.Id,
                 enabledCheckbox.checked
               );
+              updateQuickEnableIcon();
+            });
+
+            quickEnableBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              enabledCheckbox.checked = !enabledCheckbox.checked;
+              JavaScriptInjectorConfig.updatePluginScriptEnabled(
+                script.Id,
+                enabledCheckbox.checked
+              );
+              updateQuickEnableIcon();
+            });
+
+            quickRemoveBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (
+                confirm(
+                  "Are you sure you want to delete the plugin script \"" + script.Name + "\" from \"" + script.PluginName + "\"?"
+                )
+              ) {
+                JavaScriptInjectorConfig.deletePluginScript(script.Id, detailsElement);
+              }
             });
 
             removeBtn.addEventListener("click", () => {
               if (
                 confirm(
-                  `Are you sure you want to delete the plugin script "${script.Name}" from "${script.PluginName}"?`
+                  "Are you sure you want to delete the plugin script \"" + script.Name + "\" from \"" + script.PluginName + "\"?"
                 )
               ) {
                 JavaScriptInjectorConfig.deletePluginScript(script.Id, detailsElement);
