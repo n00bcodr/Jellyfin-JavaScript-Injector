@@ -3,7 +3,14 @@
 The JavaScript Injector plugin for Jellyfin allows you to inject multiple, independent JavaScript snippets into the Jellyfin web UI. It provides a powerful and easy-to-use configuration page to manage all your custom scripts from one place.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Jellyfin%20Version-10.10.x, 10.11.x-AA5CC3?logo=jellyfin&logoColor=00A4DC&labelColor=black" alt="Jellyfin Version">
+  <img src="https://img.shields.io/github/last-commit/n00bcodr/Jellyfin-JavaScript-Injector/main?logo=semantic-release&logoColor=white&label=Last%20Updated&labelColor=black&color=AA5CC3&cacheSeconds=3600" alt="Last Updated">
+  <img src="https://img.shields.io/github/commit-activity/w/n00bcodr/Jellyfin-JavaScript-Injector?logo=git&label=Commit%20Activity&labelColor=black&color=00A4DC&cacheSeconds=600" alt="Commit Activity">
+  <img src="https://img.shields.io/badge/Jellyfin%20Version-10.10, 10.11-AA5CC3?logo=jellyfin&logoColor=00A4DC&labelColor=black" alt="Jellyfin Version">
+  <br>  <br>
+  <img alt="GitHub Downloads" src="https://img.shields.io/github/downloads/n00bcodr/Jellyfin-JavaScript-Injector/latest/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip?displayAssetName=false&label=10.10%20Downloads%40Latest&labelColor=black&color=00A4DC&cacheSeconds=60">
+  <img alt="GitHub Downloads" src="https://img.shields.io/github/downloads/n00bcodr/Jellyfin-JavaScript-Injector/latest/Jellyfin.Plugin.JavaScriptInjector_10.11.0.zip?displayAssetName=false&label=10.11%20Downloads%40Latest&labelColor=black&color=AA5CC3&cacheSeconds=60">
+  <br>  <br>
+  <a href="https://discord.com/channels/1381737066366242896/1442128048873930762"><img alt="Discord" src="https://img.shields.io/badge/Jellyfin%20Enhanced%20-%20Jellyfin%20Community?&logo=discord&logoColor=white&style=for-the-badge&label=Jellyfin%20Community&labelColor=5865F2&color=black"></a>
   <br/><br/>
     <img alt="Logo" src="icon.png" width="80%"  />
 <br>
