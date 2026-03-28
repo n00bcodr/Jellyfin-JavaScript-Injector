@@ -74,6 +74,18 @@
                   authenticated users.
                 </div>
               </div>
+              <div
+                id="sanitizeNotice"
+                style="
+                  display: none;
+                  background-color: rgba(255, 193, 7, 0.12);
+                  border-left: 4px solid #ffc107;
+                  border-radius: 4px;
+                  color: inherit;
+                  margin: 1em 0;
+                  padding: 1em 1.25em;
+                "
+              ></div>
               <br />
               <div>
                 <button is="emby-button" type="submit" class="raised button-submit block">
@@ -297,6 +309,33 @@
         var JavaScriptInjectorConfig = {
           pluginId: "f5a34f7b-2e8a-4e6a-a722-3a216a81b374",
 
+          sanitizeForXml: function (text) {
+            if (!text) {
+              return "";
+            }
+
+            return text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, "");
+          },
+
+          showSanitizeNotice: function (changedScriptCount) {
+            const notice = document.querySelector("#sanitizeNotice");
+
+            if (!changedScriptCount) {
+              notice.style.display = "none";
+              notice.textContent = "";
+              return;
+            }
+
+            const noun = changedScriptCount === 1 ? "script entry" : "script entries";
+            notice.textContent =
+              "Removed XML-invalid control characters from " +
+              changedScriptCount +
+              " " +
+              noun +
+              " before saving. This prevents the plugin configuration from being reset after a Jellyfin restart.";
+            notice.style.display = "block";
+          },
+
           loadConfiguration: function () {
             Dashboard.showLoadingMsg();
             ApiClient.getPluginConfiguration(JavaScriptInjectorConfig.pluginId)
@@ -505,15 +544,27 @@
           saveConfiguration: function () {
             Dashboard.showLoadingMsg();
             const scripts = [];
+            let changedScriptCount = 0;
             // Only save user scripts, not plugin scripts
             document
               .querySelectorAll("#scriptsContainer .script-container")
               .forEach((container) => {
-                const name = container.querySelector(".script-name-input").value;
-                const script = container.querySelector(".script-code-textarea").value;
+                const nameInput = container.querySelector(".script-name-input");
+                const scriptTextarea = container.querySelector(".script-code-textarea");
+                const originalName = nameInput.value;
+                const originalScript = scriptTextarea.value;
+                const name = JavaScriptInjectorConfig.sanitizeForXml(originalName);
+                const script = JavaScriptInjectorConfig.sanitizeForXml(originalScript);
                 const enabled = container.querySelector(".script-enabled-checkbox").checked;
                 const requiresAuthentication =
                   container.querySelector(".script-auth-checkbox").checked;
+
+                if (name !== originalName || script !== originalScript) {
+                  changedScriptCount += 1;
+                  nameInput.value = name;
+                  scriptTextarea.value = script;
+                }
+
                 scripts.push({
                   Name: name,
                   Script: script,
@@ -521,6 +572,8 @@
                   RequiresAuthentication: requiresAuthentication,
                 });
               });
+
+            JavaScriptInjectorConfig.showSanitizeNotice(changedScriptCount);
 
             ApiClient.getPluginConfiguration(JavaScriptInjectorConfig.pluginId).then(function (
               config

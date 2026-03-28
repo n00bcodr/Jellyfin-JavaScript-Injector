@@ -1,3 +1,4 @@
+using Jellyfin.Plugin.JavaScriptInjector.Helpers;
 using MediaBrowser.Model.Plugins;
 
 namespace Jellyfin.Plugin.JavaScriptInjector.Configuration
@@ -32,15 +33,26 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Configuration
     /// </summary>
     public class CustomJavaScriptEntry
     {
+        private string _name = "My Custom Script";
+        private string _script = string.Empty;
+
         /// <summary>
         /// Gets or sets the name of the script.
         /// </summary>
-        public string Name { get; set; } = "My Custom Script";
+        public string Name
+        {
+            get => _name;
+            set => _name = XmlSanitizer.Sanitize(value, "My Custom Script");
+        }
 
         /// <summary>
         /// Gets or sets the script content.
         /// </summary>
-        public string Script { get; set; } = string.Empty;
+        public string Script
+        {
+            get => _script;
+            set => _script = XmlSanitizer.Sanitize(value);
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether this script is enabled.
@@ -58,24 +70,45 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Configuration
     /// </summary>
     public class PluginJavaScriptEntry : CustomJavaScriptEntry
     {
+        private string _id = string.Empty;
+        private string _pluginId = string.Empty;
+        private string _pluginName = string.Empty;
+        private string _pluginVersion = string.Empty;
+
         /// <summary>
         /// Gets or sets the unique identifier for this script entry.
         /// </summary>
-        public string Id { get; set; } = string.Empty;
+        public string Id
+        {
+            get => _id;
+            set => _id = XmlSanitizer.Sanitize(value);
+        }
 
         /// <summary>
         /// Gets or sets the ID of the plugin that registered this script.
         /// </summary>
-        public string PluginId { get; set; } = string.Empty;
+        public string PluginId
+        {
+            get => _pluginId;
+            set => _pluginId = XmlSanitizer.Sanitize(value);
+        }
 
         /// <summary>
         /// Gets or sets the name of the plugin that registered this script.
         /// </summary>
-        public string PluginName { get; set; } = string.Empty;
+        public string PluginName
+        {
+            get => _pluginName;
+            set => _pluginName = XmlSanitizer.Sanitize(value);
+        }
 
         /// <summary>
         /// Gets or sets the version of the plugin that registered this script.
         /// </summary>
-        public string PluginVersion { get; set; } = string.Empty;
+        public string PluginVersion
+        {
+            get => _pluginVersion;
+            set => _pluginVersion = XmlSanitizer.Sanitize(value);
+        }
     }
 }
