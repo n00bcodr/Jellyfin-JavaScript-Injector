@@ -123,14 +123,14 @@
               <h3 class="sectionTitle script-name-header" style="margin: 0 0 0 0.5em"></h3>
             </div>
             <div class="script-quick-actions" style="display: flex; align-items: center; gap: 0.5em;">
-              <button 
-                is="emby-button" 
-                type="button" 
+              <button
+                is="emby-button"
+                type="button"
                 class="script-quick-enable-btn"
                 style="
-                  background: none; 
-                  border: none; 
-                  padding: 0.25em; 
+                  background: none;
+                  border: none;
+                  padding: 0.25em;
                   min-height: auto;
                   color: #52b54b;
                 "
@@ -138,14 +138,14 @@
               >
                 <i class="material-icons" style="font-size: 20px;">check_box</i>
               </button>
-              <button 
-                is="emby-button" 
-                type="button" 
+              <button
+                is="emby-button"
+                type="button"
                 class="script-quick-remove-btn"
                 style="
-                  background: none; 
-                  border: none; 
-                  padding: 0.25em; 
+                  background: none;
+                  border: none;
+                  padding: 0.25em;
                   min-height: auto;
                   color: #cc3333;
                 "
@@ -213,14 +213,14 @@
               <h3 class="sectionTitle plugin-script-name-header" style="margin: 0 0 0 0.5em"></h3>
             </div>
             <div class="plugin-script-quick-actions" style="display: flex; align-items: center; gap: 0.5em;">
-              <button 
-                is="emby-button" 
-                type="button" 
+              <button
+                is="emby-button"
+                type="button"
                 class="plugin-script-quick-enable-btn"
                 style="
-                  background: none; 
-                  border: none; 
-                  padding: 0.25em; 
+                  background: none;
+                  border: none;
+                  padding: 0.25em;
                   min-height: auto;
                   color: #52b54b;
                 "
@@ -228,14 +228,14 @@
               >
                 <i class="material-icons" style="font-size: 20px;">check_box</i>
               </button>
-              <button 
-                is="emby-button" 
-                type="button" 
+              <button
+                is="emby-button"
+                type="button"
                 class="plugin-script-quick-remove-btn"
                 style="
-                  background: none; 
-                  border: none; 
-                  padding: 0.25em; 
+                  background: none;
+                  border: none;
+                  padding: 0.25em;
                   min-height: auto;
                   color: #cc3333;
                 "
@@ -317,7 +317,7 @@
             return text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g, "");
           },
 
-          showSanitizeNotice: function (changedScriptCount) {
+          showSanitizeNotice: function (changedScriptCount, changedScriptNames) {
             const notice = document.querySelector("#sanitizeNotice");
 
             if (!changedScriptCount) {
@@ -327,12 +327,16 @@
             }
 
             const noun = changedScriptCount === 1 ? "script entry" : "script entries";
+            const uniqueNames = [...new Set(changedScriptNames.filter((name) => !!name))];
+            const listedNames = uniqueNames.length > 0 ? uniqueNames.join(", ") : "Unnamed Script";
             notice.textContent =
-              "Removed XML-invalid control characters from " +
+              "Sanitized XML-invalid control characters from " +
               changedScriptCount +
               " " +
               noun +
-              " before saving. This prevents the plugin configuration from being reset after a Jellyfin restart.";
+              " before saving. Affected scripts: " +
+              listedNames +
+              ".";
             notice.style.display = "block";
           },
 
@@ -545,6 +549,7 @@
             Dashboard.showLoadingMsg();
             const scripts = [];
             let changedScriptCount = 0;
+            const changedScriptNames = [];
             // Only save user scripts, not plugin scripts
             document
               .querySelectorAll("#scriptsContainer .script-container")
@@ -561,6 +566,7 @@
 
                 if (name !== originalName || script !== originalScript) {
                   changedScriptCount += 1;
+                  changedScriptNames.push((name || originalName || "Unnamed Script").trim());
                   nameInput.value = name;
                   scriptTextarea.value = script;
                 }
@@ -573,7 +579,7 @@
                 });
               });
 
-            JavaScriptInjectorConfig.showSanitizeNotice(changedScriptCount);
+            JavaScriptInjectorConfig.showSanitizeNotice(changedScriptCount, changedScriptNames);
 
             ApiClient.getPluginConfiguration(JavaScriptInjectorConfig.pluginId).then(function (
               config
