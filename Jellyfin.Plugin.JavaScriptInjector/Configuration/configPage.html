@@ -28,19 +28,61 @@
               </div>
               <hr />
               <br />
+              <div class="verticalSection" style="display: flex; gap: 1em; align-items: center; flex-wrap: wrap; margin-bottom: 1.5em;">
+                <div class="inputContainer" style="flex: 1; min-width: 200px; margin: 0">
+                  <input
+                    is="emby-input"
+                    type="text"
+                    id="scriptSearchInput"
+                    label="Search Scripts:"
+                    placeholder="Filter by name..."
+                  />
+                </div>
+              </div>
+
               <div id="scriptsContainer" class="verticalSection-extrabottompadding">
                 <!-- User script entries will be dynamically inserted here -->
               </div>
 
-              <div class="verticalSection">
+              <div
+                id="noScriptsMessage"
+                style="display: none; color: #888; text-align: center; padding: 2em 1em"
+              ></div>
+
+              <div class="verticalSection" style="display: flex; gap: 0.75em; flex-wrap: wrap">
                 <button
                   is="emby-button"
                   type="button"
                   id="addScriptBtn"
                   class="raised button-submit block"
+                  style="flex: 1; min-width: 160px"
                 >
                   <span>Add Script</span>
                 </button>
+                <button
+                  is="emby-button"
+                  type="button"
+                  id="exportScriptsBtn"
+                  class="raised block"
+                  style="flex: 1; min-width: 160px"
+                >
+                  <span>Export All</span>
+                </button>
+                <button
+                  is="emby-button"
+                  type="button"
+                  id="importScriptsBtn"
+                  class="raised block"
+                  style="flex: 1; min-width: 160px"
+                >
+                  <span>Import</span>
+                </button>
+                <input
+                  type="file"
+                  id="importScriptsFile"
+                  accept="application/json"
+                  style="display: none"
+                />
               </div>
 
               <!-- Plugin Scripts Section -->
@@ -117,12 +159,33 @@
             "
           >
             <div style="display: flex; align-items: center;">
+              <i
+                class="material-icons drag-handle"
+                style="cursor: grab; color: #888; margin-right: 0.25em"
+                title="Drag to reorder"
+                >drag_indicator</i
+              >
               <i class="material-icons arrow-icon" style="transition: transform 0.2s ease-in-out"
                 >arrow_right</i
               >
               <h3 class="sectionTitle script-name-header" style="margin: 0 0 0 0.5em"></h3>
             </div>
             <div class="script-quick-actions" style="display: flex; align-items: center; gap: 0.5em;">
+              <button
+                is="emby-button"
+                type="button"
+                class="script-quick-export-btn"
+                style="
+                  background: none;
+                  border: none;
+                  padding: 0.25em;
+                  min-height: auto;
+                  color: #888;
+                "
+                title="Export as .js"
+              >
+                <i class="material-icons" style="font-size: 20px;">file_download</i>
+              </button>
               <button
                 is="emby-button"
                 type="button"
@@ -213,6 +276,21 @@
               <h3 class="sectionTitle plugin-script-name-header" style="margin: 0 0 0 0.5em"></h3>
             </div>
             <div class="plugin-script-quick-actions" style="display: flex; align-items: center; gap: 0.5em;">
+              <button
+                is="emby-button"
+                type="button"
+                class="plugin-script-quick-export-btn"
+                style="
+                  background: none;
+                  border: none;
+                  padding: 0.25em;
+                  min-height: auto;
+                  color: #888;
+                "
+                title="Export as .js"
+              >
+                <i class="material-icons" style="font-size: 20px;">file_download</i>
+              </button>
               <button
                 is="emby-button"
                 type="button"
@@ -308,6 +386,99 @@
       <script type="text/javascript">
         var JavaScriptInjectorConfig = {
           pluginId: "f5a34f7b-2e8a-4e6a-a722-3a216a81b374",
+          isDirty: false,
+          draggedElement: null,
+
+          markDirty: function () {
+            JavaScriptInjectorConfig.isDirty = true;
+          },
+
+          downloadTextFile: function (filename, content, mimeType) {
+            const blob = new Blob([content], { type: mimeType || "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          },
+
+          slugifyFilename: function (name) {
+            const trimmed = (name || "script").trim();
+            const slug = trimmed.replace(/[^a-z0-9\-_]+/gi, "_");
+            return (slug || "script") + ".js";
+          },
+
+          updateEmptyState: function () {
+            const scriptsContainer = document.querySelector("#scriptsContainer");
+            const noScriptsMessage = document.querySelector("#noScriptsMessage");
+            const searchTerm = document.querySelector("#scriptSearchInput").value.trim();
+            const allEntries = Array.from(scriptsContainer.querySelectorAll(":scope > details"));
+            const visibleEntries = allEntries.filter((el) => el.style.display !== "none");
+
+            if (allEntries.length === 0) {
+              noScriptsMessage.textContent = "No custom scripts yet. Click 'Add Script' to create one.";
+              noScriptsMessage.style.display = "block";
+            } else if (visibleEntries.length === 0 && searchTerm) {
+              noScriptsMessage.textContent = "No scripts match \"" + searchTerm + "\".";
+              noScriptsMessage.style.display = "block";
+            } else {
+              noScriptsMessage.style.display = "none";
+            }
+          },
+
+          filterScripts: function () {
+            const searchTerm = document
+              .querySelector("#scriptSearchInput")
+              .value.trim()
+              .toLowerCase();
+            const scriptsContainer = document.querySelector("#scriptsContainer");
+            scriptsContainer.querySelectorAll(":scope > details").forEach((entry) => {
+              const nameInput = entry.querySelector(".script-name-input");
+              const name = (nameInput ? nameInput.value : "").toLowerCase();
+              entry.style.display = !searchTerm || name.includes(searchTerm) ? "" : "none";
+            });
+            JavaScriptInjectorConfig.updateEmptyState();
+          },
+
+          getDragAfterElement: function (container, y) {
+            const elements = Array.from(container.querySelectorAll(":scope > details")).filter(
+              (el) => el !== JavaScriptInjectorConfig.draggedElement
+            );
+            return elements.reduce(
+              (closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                  return { offset: offset, element: child };
+                }
+                return closest;
+              },
+              { offset: Number.NEGATIVE_INFINITY, element: null }
+            ).element;
+          },
+
+          setupDragAndDrop: function (detailsElement, handle) {
+            handle.addEventListener("mousedown", () => {
+              detailsElement.draggable = true;
+            });
+            const resetDraggable = () => {
+              detailsElement.draggable = false;
+            };
+            handle.addEventListener("mouseup", resetDraggable);
+            detailsElement.addEventListener("dragend", () => {
+              resetDraggable();
+              detailsElement.style.opacity = "";
+              JavaScriptInjectorConfig.draggedElement = null;
+            });
+            detailsElement.addEventListener("dragstart", (e) => {
+              JavaScriptInjectorConfig.draggedElement = detailsElement;
+              e.dataTransfer.effectAllowed = "move";
+              detailsElement.style.opacity = "0.4";
+            });
+          },
 
           sanitizeForXml: function (text) {
             if (!text) {
@@ -372,6 +543,8 @@
                   pluginScriptsSection.style.display = "none";
                 }
 
+                JavaScriptInjectorConfig.updateEmptyState();
+                JavaScriptInjectorConfig.isDirty = false;
                 Dashboard.hideLoadingMsg();
               })
               .catch(function () {
@@ -391,8 +564,10 @@
             const authCheckbox = clone.querySelector(".script-auth-checkbox");
             const removeBtn = clone.querySelector(".script-remove-btn");
             const arrowIcon = clone.querySelector(".arrow-icon");
+            const dragHandle = clone.querySelector(".drag-handle");
             const quickEnableBtn = clone.querySelector(".script-quick-enable-btn");
             const quickRemoveBtn = clone.querySelector(".script-quick-remove-btn");
+            const quickExportBtn = clone.querySelector(".script-quick-export-btn");
 
             // Populate the cloned template with script data
             nameHeader.textContent = script.Name;
@@ -417,15 +592,35 @@
             // Add event listeners
             nameInput.addEventListener("input", (e) => {
               nameHeader.textContent = e.target.value || "New Script";
+              JavaScriptInjectorConfig.markDirty();
+              JavaScriptInjectorConfig.filterScripts();
             });
 
-            enabledCheckbox.addEventListener("change", updateQuickEnableIcon);
+            codeTextarea.addEventListener("input", JavaScriptInjectorConfig.markDirty);
+
+            enabledCheckbox.addEventListener("change", () => {
+              updateQuickEnableIcon();
+              JavaScriptInjectorConfig.markDirty();
+            });
+            authCheckbox.addEventListener("change", JavaScriptInjectorConfig.markDirty);
 
             quickEnableBtn.addEventListener("click", (e) => {
               e.preventDefault();
               e.stopPropagation();
               enabledCheckbox.checked = !enabledCheckbox.checked;
               updateQuickEnableIcon();
+              JavaScriptInjectorConfig.markDirty();
+            });
+
+            quickExportBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const scriptName = nameInput.value || script.Name || "script";
+              JavaScriptInjectorConfig.downloadTextFile(
+                JavaScriptInjectorConfig.slugifyFilename(scriptName),
+                codeTextarea.value,
+                "text/javascript"
+              );
             });
 
             quickRemoveBtn.addEventListener("click", (e) => {
@@ -434,6 +629,8 @@
               const scriptName = nameInput.value || script.Name || "New Script";
               if (confirm("Are you sure you want to remove the script \"" + scriptName + "\"?")) {
                 detailsElement.remove();
+                JavaScriptInjectorConfig.markDirty();
+                JavaScriptInjectorConfig.updateEmptyState();
               }
             });
 
@@ -441,6 +638,8 @@
               const scriptName = nameInput.value || script.Name || "New Script";
               if (confirm("Are you sure you want to remove the script \"" + scriptName + "\"?")) {
                 detailsElement.remove();
+                JavaScriptInjectorConfig.markDirty();
+                JavaScriptInjectorConfig.updateEmptyState();
               }
             });
 
@@ -448,6 +647,8 @@
             detailsElement.addEventListener("toggle", () => {
               arrowIcon.style.transform = detailsElement.open ? "rotate(90deg)" : "rotate(0deg)";
             });
+
+            JavaScriptInjectorConfig.setupDragAndDrop(detailsElement, dragHandle);
 
             return clone;
           },
@@ -468,6 +669,7 @@
             const pluginScriptId = clone.querySelector(".plugin-script-id");
             const quickEnableBtn = clone.querySelector(".plugin-script-quick-enable-btn");
             const quickRemoveBtn = clone.querySelector(".plugin-script-quick-remove-btn");
+            const quickExportBtn = clone.querySelector(".plugin-script-quick-export-btn");
 
             // Populate the cloned template with script data
             nameHeader.textContent = script.Name;
@@ -513,6 +715,16 @@
                 enabledCheckbox.checked
               );
               updateQuickEnableIcon();
+            });
+
+            quickExportBtn.addEventListener("click", (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              JavaScriptInjectorConfig.downloadTextFile(
+                JavaScriptInjectorConfig.slugifyFilename(script.Name),
+                codeTextarea.value,
+                "text/javascript"
+              );
             });
 
             quickRemoveBtn.addEventListener("click", (e) => {
@@ -588,10 +800,121 @@
               // Don't modify PluginJavaScripts array here
               ApiClient.updatePluginConfiguration(JavaScriptInjectorConfig.pluginId, config).then(
                 function (result) {
+                  JavaScriptInjectorConfig.isDirty = false;
                   Dashboard.processPluginConfigurationUpdateResult(result);
                 }
               );
             });
+          },
+
+          collectUserScripts: function () {
+            const scripts = [];
+            document
+              .querySelectorAll("#scriptsContainer .script-container")
+              .forEach((container) => {
+                scripts.push({
+                  Name: container.querySelector(".script-name-input").value,
+                  Script: container.querySelector(".script-code-textarea").value,
+                  Enabled: container.querySelector(".script-enabled-checkbox").checked,
+                  RequiresAuthentication: container.querySelector(".script-auth-checkbox").checked,
+                });
+              });
+            return scripts;
+          },
+
+          exportAllScripts: function () {
+            const scripts = JavaScriptInjectorConfig.collectUserScripts();
+            const payload = { CustomJavaScripts: scripts };
+            const timestamp = new Date().toISOString().slice(0, 10);
+            JavaScriptInjectorConfig.downloadTextFile(
+              "jellyfin-javascript-injector-scripts-" + timestamp + ".json",
+              JSON.stringify(payload, null, 2),
+              "application/json"
+            );
+          },
+
+          importScripts: function (file) {
+            const reader = new FileReader();
+            reader.onload = function () {
+              let parsed;
+              try {
+                parsed = JSON.parse(reader.result);
+              } catch (err) {
+                alert("Import failed: the selected file is not valid JSON.");
+                return;
+              }
+
+              const scripts = Array.isArray(parsed)
+                ? parsed
+                : Array.isArray(parsed.CustomJavaScripts)
+                ? parsed.CustomJavaScripts
+                : null;
+
+              if (!scripts) {
+                alert(
+                  "Import failed: expected a JSON array of scripts or an object with a CustomJavaScripts array."
+                );
+                return;
+              }
+
+              const valid = scripts.filter((s) => s && typeof s.Script === "string");
+              if (valid.length === 0) {
+                alert("Import failed: no valid script entries were found in the file.");
+                return;
+              }
+
+              const existingNames = new Set(
+                Array.from(document.querySelectorAll("#scriptsContainer .script-name-input"))
+                  .map((input) => input.value.trim().toLowerCase())
+                  .filter((name) => !!name)
+              );
+              const duplicates = valid.filter((s) =>
+                existingNames.has((s.Name || "").trim().toLowerCase())
+              );
+              const nonDuplicates = valid.filter((s) => !duplicates.includes(s));
+
+              let toImport = valid;
+              if (duplicates.length > 0) {
+                const duplicateNames = [...new Set(duplicates.map((s) => s.Name || "Unnamed Script"))].join(
+                  ", "
+                );
+                const importDuplicates = confirm(
+                  "The following scripts already exist: " +
+                    duplicateNames +
+                    ".\n\nImport them anyway as duplicates? Click Cancel to import only the " +
+                    nonDuplicates.length +
+                    " new script" + (nonDuplicates.length === 1 ? "" : "s") + "."
+                );
+                toImport = importDuplicates ? valid : nonDuplicates;
+              } else if (
+                !confirm(
+                  "Import " + valid.length + " script" + (valid.length === 1 ? "" : "s") +
+                    " and add to your existing list?"
+                )
+              ) {
+                return;
+              }
+
+              if (toImport.length === 0) {
+                return;
+              }
+
+              const scriptsContainer = document.querySelector("#scriptsContainer");
+              toImport.forEach((s) => {
+                scriptsContainer.appendChild(
+                  JavaScriptInjectorConfig.createScriptEntry({
+                    Name: s.Name || "Imported Script",
+                    Script: s.Script,
+                    Enabled: typeof s.Enabled === "boolean" ? s.Enabled : true,
+                    RequiresAuthentication: !!s.RequiresAuthentication,
+                  })
+                );
+              });
+
+              JavaScriptInjectorConfig.markDirty();
+              JavaScriptInjectorConfig.filterScripts();
+            };
+            reader.readAsText(file);
           },
 
           updatePluginScriptEnabled: function (scriptId, enabled) {
@@ -630,7 +953,14 @@
             });
           },
 
+          eventsRegistered: false,
+
           registerEvents: function () {
+            if (JavaScriptInjectorConfig.eventsRegistered) {
+              return;
+            }
+            JavaScriptInjectorConfig.eventsRegistered = true;
+
             document
               .querySelector("#JavaScriptInjectorConfigForm")
               .addEventListener("submit", function (e) {
@@ -641,14 +971,73 @@
 
             document.querySelector("#addScriptBtn").addEventListener("click", function () {
               const scriptsContainer = document.querySelector("#scriptsContainer");
-              scriptsContainer.appendChild(
-                JavaScriptInjectorConfig.createScriptEntry({
-                  Name: "New Script",
-                  Script: "",
-                  Enabled: true,
-                  RequiresAuthentication: false,
-                })
+              const entry = JavaScriptInjectorConfig.createScriptEntry({
+                Name: "New Script",
+                Script: "",
+                Enabled: true,
+                RequiresAuthentication: false,
+              });
+              scriptsContainer.appendChild(entry);
+
+              const newDetails = scriptsContainer.querySelector("details:last-of-type");
+              newDetails.open = true;
+              newDetails.scrollIntoView({ behavior: "smooth", block: "center" });
+              const newNameInput = newDetails.querySelector(".script-name-input");
+              newNameInput.focus();
+              newNameInput.select();
+
+              JavaScriptInjectorConfig.markDirty();
+              JavaScriptInjectorConfig.updateEmptyState();
+            });
+
+            document.querySelector("#scriptSearchInput").addEventListener("input", function () {
+              JavaScriptInjectorConfig.filterScripts();
+            });
+
+            document.querySelector("#exportScriptsBtn").addEventListener("click", function () {
+              JavaScriptInjectorConfig.exportAllScripts();
+            });
+
+            const importFileInput = document.querySelector("#importScriptsFile");
+            document.querySelector("#importScriptsBtn").addEventListener("click", function () {
+              importFileInput.value = "";
+              importFileInput.click();
+            });
+            importFileInput.addEventListener("change", function (e) {
+              if (e.target.files && e.target.files[0]) {
+                JavaScriptInjectorConfig.importScripts(e.target.files[0]);
+              }
+            });
+
+            const scriptsContainer = document.querySelector("#scriptsContainer");
+            scriptsContainer.addEventListener("dragover", function (e) {
+              if (!JavaScriptInjectorConfig.draggedElement) {
+                return;
+              }
+              e.preventDefault();
+              const afterElement = JavaScriptInjectorConfig.getDragAfterElement(
+                scriptsContainer,
+                e.clientY
               );
+              if (afterElement == null) {
+                scriptsContainer.appendChild(JavaScriptInjectorConfig.draggedElement);
+              } else {
+                scriptsContainer.insertBefore(JavaScriptInjectorConfig.draggedElement, afterElement);
+              }
+            });
+            scriptsContainer.addEventListener("drop", function (e) {
+              if (JavaScriptInjectorConfig.draggedElement) {
+                e.preventDefault();
+                JavaScriptInjectorConfig.markDirty();
+              }
+            });
+
+            window.addEventListener("beforeunload", function (e) {
+              if (JavaScriptInjectorConfig.isDirty) {
+                e.preventDefault();
+                e.returnValue = "";
+                return "";
+              }
             });
           },
         };
