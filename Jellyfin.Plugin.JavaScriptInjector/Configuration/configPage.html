@@ -169,6 +169,12 @@
                 >arrow_right</i
               >
               <h3 class="sectionTitle script-name-header" style="margin: 0 0 0 0.5em"></h3>
+              <i
+                class="material-icons script-error-icon"
+                style="display: none; color: #ffc107; margin-left: 0.5em; font-size: 20px"
+                title="This script has errors"
+                >warning</i
+              >
             </div>
             <div class="script-quick-actions" style="display: flex; align-items: center; gap: 0.5em;">
               <button
@@ -383,11 +389,130 @@
         </details>
       </template>
 
+      <style>
+        .CodeMirror {
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
+          height: 300px;
+          font-size: 13px;
+        }
+      </style>
+
       <script type="text/javascript">
         var JavaScriptInjectorConfig = {
           pluginId: "f5a34f7b-2e8a-4e6a-a722-3a216a81b374",
           isDirty: false,
           draggedElement: null,
+
+          // Loads CodeMirror 5 (vendored, served from JavaScriptInjectorController so the
+          // config page doesn't depend on a CDN) and resolves true/false depending on
+          // whether it loaded successfully. Code textareas fall back to plain <textarea>
+          // editing if this fails, so a blocked/offline request never breaks the page.
+          cmReady: (function () {
+            function vendorUrl(name) {
+              return ApiClient.getUrl("/JavaScriptInjector/vendor/" + name);
+            }
+            function loadCss(href) {
+              return new Promise(function (resolve) {
+                var link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = href;
+                link.onload = resolve;
+                link.onerror = resolve;
+                document.head.appendChild(link);
+              });
+            }
+            function loadScript(src) {
+              return new Promise(function (resolve, reject) {
+                var script = document.createElement("script");
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+              });
+            }
+
+            loadCss(vendorUrl("codemirror.min.css"));
+            loadCss(vendorUrl("material-darker.min.css"));
+            loadCss(vendorUrl("lint.min.css"));
+
+            return loadScript(vendorUrl("codemirror.min.js"))
+              .then(function () {
+                return Promise.all([
+                  loadScript(vendorUrl("javascript.min.js")),
+                  loadScript(vendorUrl("matchbrackets.min.js")),
+                  loadScript(vendorUrl("closebrackets.min.js")),
+                  loadScript(vendorUrl("active-line.min.js")),
+                  loadScript(vendorUrl("jshint.min.js")),
+                  loadScript(vendorUrl("lint.min.js")),
+                ]);
+              })
+              .then(function () {
+                // javascript-lint.js registers the "javascript" lint helper, and needs
+                // window.JSHINT (from jshint.min.js) to already be defined when it runs.
+                return loadScript(vendorUrl("javascript-lint.min.js"));
+              })
+              .then(function () {
+                return true;
+              })
+              .catch(function (err) {
+                console.error(
+                  "JavaScript Injector: failed to load the code editor library, falling back to plain textareas.",
+                  err
+                );
+                return false;
+              });
+          })(),
+
+          // Upgrades a code <textarea> to a CodeMirror editor once the library is ready.
+          // Keeps the underlying textarea's .value in sync on every change, so all
+          // existing code that reads textarea.value (save, export, etc.) needs no changes.
+          // onLintUpdate, if given, is called with the current list of JSHint
+          // annotations every time linting re-runs (e.g. to toggle an error icon).
+          attachCodeEditor: function (textarea, readOnly, onLintUpdate) {
+            JavaScriptInjectorConfig.cmReady.then(function (loaded) {
+              if (!loaded || !window.CodeMirror || !document.body.contains(textarea)) {
+                return;
+              }
+              var cm = CodeMirror.fromTextArea(textarea, {
+                mode: "javascript",
+                theme: "material-darker",
+                lineNumbers: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                styleActiveLine: !readOnly,
+                readOnly: readOnly,
+                tabSize: 2,
+                indentUnit: 2,
+                // Editable scripts get live JSHint linting (gutter markers + tooltips) so
+                // typos/syntax errors surface before saving. Loose ruleset on purpose: this
+                // lints arbitrary user snippets that reference host globals like ApiClient,
+                // so it only needs to catch real mistakes, not enforce a style guide.
+                gutters: readOnly ? [] : ["CodeMirror-lint-markers"],
+                lint: readOnly
+                  ? false
+                  : {
+                      options: {
+                        esversion: 11,
+                        browser: true,
+                        devel: true,
+                        undef: false,
+                        unused: false,
+                        laxbreak: true,
+                        laxcomma: true,
+                        expr: true,
+                      },
+                      onUpdateLinting: onLintUpdate || undefined,
+                    },
+              });
+              if (!readOnly) {
+                cm.on("change", function () {
+                  cm.save();
+                  JavaScriptInjectorConfig.markDirty();
+                });
+              }
+            });
+          },
 
           markDirty: function () {
             JavaScriptInjectorConfig.isDirty = true;
@@ -558,6 +683,7 @@
 
             const detailsElement = clone.querySelector("details");
             const nameHeader = clone.querySelector(".script-name-header");
+            const errorIcon = clone.querySelector(".script-error-icon");
             const nameInput = clone.querySelector(".script-name-input");
             const codeTextarea = clone.querySelector(".script-code-textarea");
             const enabledCheckbox = clone.querySelector(".script-enabled-checkbox");
@@ -649,6 +775,9 @@
             });
 
             JavaScriptInjectorConfig.setupDragAndDrop(detailsElement, dragHandle);
+            JavaScriptInjectorConfig.attachCodeEditor(codeTextarea, false, function (annotations) {
+              errorIcon.style.display = annotations && annotations.length > 0 ? "" : "none";
+            });
 
             return clone;
           },
@@ -753,6 +882,8 @@
             detailsElement.addEventListener("toggle", () => {
               arrowIcon.style.transform = detailsElement.open ? "rotate(90deg)" : "rotate(0deg)";
             });
+
+            JavaScriptInjectorConfig.attachCodeEditor(codeTextarea, true);
 
             return clone;
           },
