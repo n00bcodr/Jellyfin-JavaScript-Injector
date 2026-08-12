@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.RegularExpressions;
 using Jellyfin.Plugin.JavaScriptInjector.Helpers;
-using Jellyfin.Plugin.JavaScriptInjector.JellyfinVersionSpecific;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Model.Tasks;
 using Microsoft.Extensions.Logging;
@@ -11,6 +10,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Jellyfin.Plugin.JavaScriptInjector.Services
 {
+    /// <summary>
+    /// Startup cleanup and legacy-fallback injection path.
+    ///
+    /// Script injection is normally handled entirely by
+    /// <see cref="ScriptInjectionStartupFilter"/> at request time, which needs no
+    /// scheduled task at all. This task always cleans up any on-disk script block
+    /// left by earlier plugin versions (which used to write directly to
+    /// index.html), and only re-registers with File Transformation / falls back to
+    /// writing index.html itself when the middleware is disabled via
+    /// DisableScriptInjectionMiddleware.
+    /// </summary>
     public class StartupService : IScheduledTask
     {
         private readonly ILogger<StartupService> _logger;
@@ -18,7 +28,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Services
 
         public string Name => "JavaScript Injector Startup";
         public string Key => "JavaScriptInjectorStartup";
-        public string Description => "Injects scripts using the File Transformation plugin and performs cleanup.";
+        public string Description => "Cleans up legacy on-disk script injection and, if the request-time middleware is disabled, falls back to File Transformation / direct index.html injection.";
         public string Category => "Startup Services";
 
         public StartupService(ILogger<StartupService> logger, IApplicationPaths appPaths)
@@ -32,7 +42,12 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Services
             await Task.Run(() =>
             {
                 CleanupOldScript();
-                RegisterFileTransformation();
+
+                var config = Plugin.Instance?.Configuration;
+                if (config != null && config.DisableScriptInjectionMiddleware)
+                {
+                    RegisterFileTransformation();
+                }
             }, cancellationToken);
         }
 
@@ -110,6 +125,12 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Services
             }
         }
 
-        public IEnumerable<TaskTriggerInfo> GetDefaultTriggers() => StartupServiceHelper.GetDefaultTriggers();
+        public IEnumerable<TaskTriggerInfo> GetDefaultTriggers()
+        {
+            yield return new TaskTriggerInfo()
+            {
+                Type = TaskTriggerInfoType.StartupTrigger
+            };
+        }
     }
 }

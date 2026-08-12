@@ -119,6 +119,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector
                     DisplayName = "JS Injector",
                     EnableInMainMenu = true,
                     EmbeddedResourcePath = $"{GetType().Namespace}.Configuration.configPage.html",
+                    MenuIcon = "code",
                 }
             };
         }
