@@ -1,7 +1,7 @@
 [
   {
-    "guid": "f5a34f7b-2e8a-4e6a-a722-3a216a81b374",
     "name": "JavaScript Injector",
+    "guid": "f5a34f7b-2e8a-4e6a-a722-3a216a81b374",
     "overview": "Inject custom javascript(s) to the Jellyfin Web UI",
     "description": "Inject custom javascript(s) to the Jellyfin Web UI",
     "owner": "n00bcodr",
@@ -9,7 +9,15 @@
     "imageUrl": "https://raw.githubusercontent.com/n00bcodr/jellyfin-javascript-injector/main/icon.png",
     "versions": [
       {
-        "changelog": "- Add Jellyfin 12 support via IStartupFilter, drop 10.10.7\n - Add CodeMirror code editor with JSHint linting to config page",
+        "changelog": "**Build for Jellyfin 12.**\n\n- Add Jellyfin 12 support via IStartupFilter, drop 10.10.7\n - Add CodeMirror code editor with JSHint linting to config page",
+        "targetAbi": "12.0.0.0",
+        "version": "4.0.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/4.0.0.0/Jellyfin.Plugin.JavaScriptInjector_12.0.0.zip",
+        "checksum": "E9B247E1CBD473B02CC71BD6E3DAE369",
+        "timestamp": "2026-08-12T15:53:52"
+      },
+      {
+        "changelog": "**Build for Jellyfin 10.11.** On Jellyfin 12 the catalog installs the Jellyfin 12 build of this version automatically.\n\n- Add Jellyfin 12 support via IStartupFilter, drop 10.10.7\n - Add CodeMirror code editor with JSHint linting to config page",
         "targetAbi": "10.11.0.0",
         "version": "4.0.0.0",
         "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/4.0.0.0/Jellyfin.Plugin.JavaScriptInjector_10.11.0.zip",
@@ -17,7 +25,15 @@
         "timestamp": "2026-08-12T15:53:47"
       },
       {
-        "changelog": "- Add search, drag-reorder, import/export, and unsaved-changes guard to config page",
+        "changelog": "**Build for Jellyfin 10.11 only. Not for Jellyfin 12.**\n\n- Add search, drag-reorder, import/export, and unsaved-changes guard to config page",
+        "targetAbi": "10.11.0.0",
+        "version": "3.5.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.5.0.0/Jellyfin.Plugin.JavaScriptInjector_10.11.0.zip",
+        "checksum": "AF0D6C50F02595974F5FA509974133C8",
+        "timestamp": "2026-07-19T18:31:45"
+      },
+      {
+        "changelog": "**Build for Jellyfin 10.10 only. Not for Jellyfin 12.**\n\n- Add search, drag-reorder, import/export, and unsaved-changes guard to config page",
         "targetAbi": "10.10.7.0",
         "version": "3.5.0.0",
         "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.5.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
@@ -25,7 +41,15 @@
         "timestamp": "2026-07-19T18:31:55"
       },
       {
-        "changelog": "- Update README with new badge links and images\n - Update funding.yml\n - Create LICENSE\n - Implement XML sanitization for script entries and enhance configuration UI\n - Update configPage.html",
+        "changelog": "**Build for Jellyfin 10.11 only. Not for Jellyfin 12.**\n\n- Update README with new badge links and images\n - Update funding.yml\n - Create LICENSE\n - Implement XML sanitization for script entries and enhance configuration UI\n - Update configPage.html",
+        "targetAbi": "10.11.0.0",
+        "version": "3.4.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.4.0.0/Jellyfin.Plugin.JavaScriptInjector_10.11.0.zip",
+        "checksum": "88A06677733EACCAD9D8CE3C94D972D5",
+        "timestamp": "2026-03-28T13:40:37"
+      },
+      {
+        "changelog": "**Build for Jellyfin 10.10 only. Not for Jellyfin 12.**\n\n- Update README with new badge links and images\n - Update funding.yml\n - Create LICENSE\n - Implement XML sanitization for script entries and enhance configuration UI\n - Update configPage.html",
         "targetAbi": "10.10.7.0",
         "version": "3.4.0.0",
         "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.4.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
@@ -33,7 +57,15 @@
         "timestamp": "2026-03-28T13:40:44"
       },
       {
-        "changelog": "- Update README.md\n - Add quick enable/disable and remove buttons for scripts",
+        "changelog": "**Build for Jellyfin 10.11 only. Not for Jellyfin 12.**\n\n- Update README.md\n - Add quick enable/disable and remove buttons for scripts",
+        "targetAbi": "10.11.0.0",
+        "version": "3.3.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.3.0.0/Jellyfin.Plugin.JavaScriptInjector_10.11.0.zip",
+        "checksum": "38D83C75282B4E5A51D622E3FF58E4CE",
+        "timestamp": "2026-01-18T18:25:22"
+      },
+      {
+        "changelog": "**Build for Jellyfin 10.10 only. Not for Jellyfin 12.**\n\n- Update README.md\n - Add quick enable/disable and remove buttons for scripts",
         "targetAbi": "10.10.7.0",
         "version": "3.3.0.0",
         "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.3.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
@@ -41,7 +73,15 @@
         "timestamp": "2026-01-18T18:25:28"
       },
       {
-        "changelog": "- Implement timestamp cache-busting",
+        "changelog": "**Build for Jellyfin 10.11 only. Not for Jellyfin 12.**\n\n- Implement timestamp cache-busting",
+        "targetAbi": "10.11.0.0",
+        "version": "3.2.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.2.0.0/Jellyfin.Plugin.JavaScriptInjector_10.11.0.zip",
+        "checksum": "6E81F8C8F4E48F7A9E3335A3F81D91FA",
+        "timestamp": "2025-12-07T10:05:50"
+      },
+      {
+        "changelog": "**Build for Jellyfin 10.10 only. Not for Jellyfin 12.**\n\n- Implement timestamp cache-busting",
         "targetAbi": "10.10.7.0",
         "version": "3.2.0.0",
         "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.2.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
@@ -49,7 +89,15 @@
         "timestamp": "2025-12-07T10:05:55"
       },
       {
-        "changelog": "- Revise repository URL instructions in README\n - refactor: create javascript helper\n - feat: add plugin interface\n - chore: remove unused imports\n - fix: dont validate payload in plugin interface\n - docs: fix example formatting",
+        "changelog": "**Build for Jellyfin 10.11 only. Not for Jellyfin 12.**\n\n- Revise repository URL instructions in README\n - refactor: create javascript helper\n - feat: add plugin interface\n - chore: remove unused imports\n - fix: dont validate payload in plugin interface\n - docs: fix example formatting",
+        "targetAbi": "10.11.0.0",
+        "version": "3.1.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.1.0.0/Jellyfin.Plugin.JavaScriptInjector_10.11.0.zip",
+        "checksum": "EA07AEB608FB3CC7FC76302B45ACE4D2",
+        "timestamp": "2025-11-19T19:19:09"
+      },
+      {
+        "changelog": "**Build for Jellyfin 10.10 only. Not for Jellyfin 12.**\n\n- Revise repository URL instructions in README\n - refactor: create javascript helper\n - feat: add plugin interface\n - chore: remove unused imports\n - fix: dont validate payload in plugin interface\n - docs: fix example formatting",
         "targetAbi": "10.10.7.0",
         "version": "3.1.0.0",
         "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.1.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
@@ -57,7 +105,15 @@
         "timestamp": "2025-11-19T19:19:13"
       },
       {
-        "changelog": "- Fix script path for installations with base url\n - Please remove this manifest and add the manifest for 10.11 if you are on 10.11. \n https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json ",
+        "changelog": "**Build for Jellyfin 10.11 only. Not for Jellyfin 12.**\n\n- Fix script path for installations with base url",
+        "targetAbi": "10.11.0.0",
+        "version": "3.0.1.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.0.1.0/Jellyfin.Plugin.JavaScriptInjector_10.11.0.zip",
+        "checksum": "C4EB15CDD6BB7A39F87BD096A69C76C0",
+        "timestamp": "2025-10-22T05:38:25"
+      },
+      {
+        "changelog": "**Build for Jellyfin 10.10 only. Not for Jellyfin 12.**\n\n- Fix script path for installations with base url\n - Please remove this manifest and add the manifest for 10.11 if you are on 10.11. \n https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json",
         "targetAbi": "10.10.7.0",
         "version": "3.0.1.0",
         "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.0.1.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
@@ -65,7 +121,15 @@
         "timestamp": "2025-10-22T05:38:30"
       },
       {
-        "changelog": "- 10.11 Support!\n - Please add the manifest for 10.11 if you are on 10.11. https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json ",
+        "changelog": "**Build for Jellyfin 10.11 only. Not for Jellyfin 12.**\n\n- Support for 10.11",
+        "targetAbi": "10.11.0.0",
+        "version": "3.0.0.0",
+        "sourceUrl": "https://github.com/n00bcodr/Jellyfin-JavaScript-Injector/releases/download/3.0.0.0/Jellyfin.Plugin.JavaScriptInjector_10.11.0.zip",
+        "checksum": "1448F94FD472D789E0A2E711F6F929E2",
+        "timestamp": "2025-10-20T17:27:02"
+      },
+      {
+        "changelog": "**Build for Jellyfin 10.10 only. Not for Jellyfin 12.**\n\n- 10.11 Support!\n - Please add the manifest for 10.11 if you are on 10.11. https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json",
         "targetAbi": "10.10.7.0",
         "version": "3.0.0.0",
         "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/3.0.0.0/Jellyfin.Plugin.JavaScriptInjector_10.10.7.zip",
@@ -74,7 +138,7 @@
       },
       {
         "version": "2.0.0.0",
-        "changelog": "- Use [file-transformation-plugin](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) to 'inject' javascript without modifying index.html\n - This is to help with all the permission issues for docker installs.\n - Fallback if file-transformation-plugin is not installed to the regular index.html modification\n",
+        "changelog": "**Build for Jellyfin 10.9 only. Not for Jellyfin 12.**\n\n- Use [file-transformation-plugin](https://github.com/IAmParadox27/jellyfin-plugin-file-transformation) to 'inject' javascript without modifying index.html\n - This is to help with all the permission issues for docker installs.\n - Fallback if file-transformation-plugin is not installed to the regular index.html modification",
         "targetAbi": "10.9.9.0",
         "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/2.0.0.0/javascript-injector-2.0.0.0.zip",
         "checksum": "89c5e8c0d140e8fcb8826202b1b91de8",
@@ -82,7 +146,7 @@
       },
       {
         "version": "1.1.1.1",
-        "changelog": "- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
+        "changelog": "**Build for Jellyfin 10.9 only. Not for Jellyfin 12.**\n\n- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
         "targetAbi": "10.9.9.0",
         "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.1.1/javascript-injector-1.1.1.1.zip",
         "checksum": "db8d7806b3e112ddaf40caa55fdb0f1d",
@@ -90,7 +154,7 @@
       },
       {
         "version": "1.1.1.0",
-        "changelog": "- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
+        "changelog": "**Build for Jellyfin 10.9 only. Not for Jellyfin 12.**\n\n- Wrap the injected script block with clear HTML comments for safer and more reliable identification. \n- Update removal logic to use specific regex patterns for injection formats, ensuring idempotent upgrades and preventing accidental removal of unrelated scripts.",
         "targetAbi": "10.9.9.0",
         "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.1.0/javascript-injector-1.1.1.0.zip",
         "checksum": "39620ac480c10a6a68a7a6fdf2c93990",
@@ -98,7 +162,7 @@
       },
       {
         "version": "1.1.0.0",
-        "changelog": "- Script Visibility \n - Add an option to only load a script for an authenticated session.",
+        "changelog": "**Build for Jellyfin 10.9 only. Not for Jellyfin 12.**\n\n- Script Visibility \n - Add an option to only load a script for an authenticated session.",
         "targetAbi": "10.9.9.0",
         "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.1.0.0/javascript-injector-1.1.0.0.zip",
         "checksum": "21817433c4aeb9d56774ff376d136240",
@@ -106,7 +170,7 @@
       },
       {
         "version": "1.0.0.0",
-        "changelog": "Support multiple scripts and dynamic injection",
+        "changelog": "**Build for Jellyfin 10.9 only. Not for Jellyfin 12.**\n\nSupport multiple scripts and dynamic injection",
         "targetAbi": "10.9.9.0",
         "sourceUrl": "https://github.com/n00bcodr/jellyfin-javascript-injector/releases/download/1.0.0.0/javascript-injector-1.0.0.0.zip",
         "checksum": "eb340151e6d2c29690ced20740fba52e",
