@@ -40,6 +40,12 @@
   <ItemGroup>
     <None Remove="Configuration\configPage.html" />
     <EmbeddedResource Include="Configuration\configPage.html" />
+    <!-- Config-page stylesheet, served separately (not inlined) because Jellyfin's
+         dashboard strips <style> tags when it injects the fetched config page HTML
+         into the SPA. Loaded at runtime via a JS-created <link>, same as the
+         vendored CodeMirror CSS below. -->
+    <None Remove="Configuration\configPage.css" />
+    <EmbeddedResource Include="Configuration\configPage.css" />
     <!-- Vendored CodeMirror 5 (config-page code editor). Served locally via
          JavaScriptInjectorController so the config page doesn't depend on a CDN. -->
     <None Remove="Configuration\vendor\codemirror\**" />

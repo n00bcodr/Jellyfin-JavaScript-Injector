@@ -1,0 +1,35 @@
+.CodeMirror {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  height: 300px;
+  font-size: 13px;
+}
+
+#mainConfigSection {
+  width: 50vw;
+  min-width: 600px;
+}
+
+@media (max-width: 700px) {
+  #mainConfigSection {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+#floatingSaveContainer {
+  position: fixed !important;
+  bottom: 2em;
+  right: 2em;
+  z-index: 1000;
+}
+
+#saveScriptsBtn {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  text-align: center !important;
+  transition: border-color 0.2s ease-in-out !important;
+}
+
+#saveScriptsBtn.is-dirty {
+  border: 2px solid #ffc107 !important;
+}

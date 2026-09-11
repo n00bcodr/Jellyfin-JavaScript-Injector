@@ -61,6 +61,28 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Controllers
         }
 
         /// <summary>
+        /// Serves the config page's stylesheet from an embedded resource. Kept as a
+        /// separate file (rather than an inline &lt;style&gt; tag) because Jellyfin's
+        /// dashboard strips &lt;style&gt; tags when it injects the fetched config page
+        /// HTML into the SPA; the config page loads this via a JS-created &lt;link&gt;.
+        /// </summary>
+        [HttpGet("Configuration/configPage.css")]
+        [AllowAnonymous]
+        public ActionResult GetConfigPageStylesheet()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var resourceName = "Jellyfin.Plugin.JavaScriptInjector.Configuration.configPage.css";
+            var stream = assembly.GetManifestResourceStream(resourceName);
+            if (stream == null)
+            {
+                return NotFound();
+            }
+
+            Response.Headers["Cache-Control"] = "public, max-age=31536000, immutable";
+            return new FileStreamResult(stream, "text/css");
+        }
+
+        /// <summary>
         /// This endpoint provides scripts that do NOT require authentication.
         /// It is accessible to everyone, including users on the login page.
         /// </summary>

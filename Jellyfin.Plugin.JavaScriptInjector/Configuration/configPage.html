@@ -12,7 +12,7 @@
       <div data-role="content">
         <div class="content-primary">
           <form id="JavaScriptInjectorConfigForm">
-            <div class="verticalSection verticalSection-extrabottompadding">
+            <div class="verticalSection verticalSection-extrabottompadding" id="mainConfigSection">
               <div class="sectionTitleContainer flex align-items-center">
                 <h2 class="sectionTitle">JavaScript Injector</h2>
                 <a
@@ -129,9 +129,15 @@
                 "
               ></div>
               <br />
-              <div>
-                <button is="emby-button" type="submit" class="raised button-submit block">
-                  <span>Save</span>
+
+              <div id="floatingSaveContainer">
+                <button
+                  is="emby-button"
+                  type="submit"
+                  id="saveScriptsBtn"
+                  class="raised button-submit"
+                >
+                  <span id="saveScriptsBtnLabel">Save</span>
                 </button>
               </div>
             </div>
@@ -389,16 +395,17 @@
         </details>
       </template>
 
-      <style>
-        .CodeMirror {
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          border-radius: 4px;
-          height: 300px;
-          font-size: 13px;
-        }
-      </style>
-
       <script type="text/javascript">
+        (function () {
+          // Jellyfin's dashboard strips <style> tags when it injects this fetched
+          // config page HTML into the SPA, so the stylesheet is served separately
+          // and loaded here via a JS-created <link> instead.
+          var link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.href = ApiClient.getUrl("/JavaScriptInjector/Configuration/configPage.css");
+          document.head.appendChild(link);
+        })();
+
         var JavaScriptInjectorConfig = {
           pluginId: "f5a34f7b-2e8a-4e6a-a722-3a216a81b374",
           isDirty: false,
@@ -516,6 +523,17 @@
 
           markDirty: function () {
             JavaScriptInjectorConfig.isDirty = true;
+            JavaScriptInjectorConfig.updateDirtyIndicator();
+          },
+
+          updateDirtyIndicator: function () {
+            const saveBtn = document.querySelector("#saveScriptsBtn");
+            const label = document.querySelector("#saveScriptsBtnLabel");
+            if (!saveBtn || !label) {
+              return;
+            }
+            saveBtn.classList.toggle("is-dirty", JavaScriptInjectorConfig.isDirty);
+            label.textContent = JavaScriptInjectorConfig.isDirty ? "Save*" : "Save";
           },
 
           downloadTextFile: function (filename, content, mimeType) {
@@ -670,6 +688,7 @@
 
                 JavaScriptInjectorConfig.updateEmptyState();
                 JavaScriptInjectorConfig.isDirty = false;
+                JavaScriptInjectorConfig.updateDirtyIndicator();
                 Dashboard.hideLoadingMsg();
               })
               .catch(function () {
@@ -932,6 +951,7 @@
               ApiClient.updatePluginConfiguration(JavaScriptInjectorConfig.pluginId, config).then(
                 function (result) {
                   JavaScriptInjectorConfig.isDirty = false;
+                  JavaScriptInjectorConfig.updateDirtyIndicator();
                   Dashboard.processPluginConfigurationUpdateResult(result);
                 }
               );
