@@ -26,24 +26,23 @@ The JavaScript Injector plugin for Jellyfin allows you to inject multiple, indep
 
 -   **Immediate Injection**: The plugin injects a loader script into the Jellyfin web UI on every page load, with no changes to your Jellyfin install on disk. Your custom scripts are loaded dynamically, and changes take effect after a simple browser refresh.
 
+-   **Module and External Scripts**: Load a script as an ES module (so it can use `import`) or from a URL instead of pasting the code. External `http(s)` URLs are off by default; an admin can allow them with **Allow external script URLs**.
+
 -   **Plugin Support**: Other plugins can register their own JavaScript snippets programmatically using the provided service interface.
 
 ## ⚙️ Installation
 
 
 1.  In Jellyfin, go to **Dashboard** > **Plugins** > **Catalog** > ⚙️
-2.  Click **➕** and give the repository a name (e.g., "JavaScript Injector Repo").
+2.  Click **➕** and give the repository a name (e.g., "n00bcodr Plugins").
 3.  Set the **Repository URL** to:
 
-> [!IMPORTANT]
-> **If you are on Jellyfin version 10.11**
-> ``` 
-> https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/10.11/manifest.json 
-> ```
-> If you are on Jellyfin version 12
-> ``` 
-> https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/12/manifest.json 
-> ```
+``` 
+https://raw.githubusercontent.com/n00bcodr/jellyfin-plugins/main/manifest.json 
+```
+
+> [!NOTE]
+> The same URL works for Jellyfin 10.11 and 12. Jellyfin installs the build that matches your server.
 
 4.  Click **Save**.
 5.  Go to the **Catalog** tab, find **JavaScript Injector** in the list, and click **Install**.
@@ -59,9 +58,10 @@ The JavaScript Injector plugin for Jellyfin allows you to inject multiple, indep
 2.  Click **Add Script** to create a new entry.
 3.  Give your script a descriptive **name**.
 4.  Enter your code in the **JavaScript Code** text area.
-5.  Use the **Enabled** checkbox to control whether the script is active.
-6.  Click **Save**.
-7.  **Refresh your browser** to see the changes take effect.
+5.  Optionally, set a **Script URL** to load the script from a file instead, and tick **Load as module** if it uses `import`.
+6.  Use the **Enabled** checkbox to control whether the script is active.
+7.  Click **Save**.
+8.  **Refresh your browser** to see the changes take effect.
 
 
 ## ⌨️ Usage Examples
