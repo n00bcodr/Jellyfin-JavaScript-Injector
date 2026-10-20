@@ -27,6 +27,18 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Model
         public string Script { get; set; } = string.Empty;
 
         /// <summary>
+        /// Optional URL to load instead of inlining <see cref="Script"/>.
+        /// </summary>
+        [JsonPropertyName("src")]
+        public string? Src { get; set; }
+
+        /// <summary>
+        /// Whether the script is loaded as an ES module (type="module").
+        /// </summary>
+        [JsonPropertyName("module")]
+        public bool Module { get; set; } = false;
+
+        /// <summary>
         /// Whether the script is enabled.
         /// </summary>
         [JsonPropertyName("enabled")]

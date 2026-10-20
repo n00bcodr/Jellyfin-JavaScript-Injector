@@ -168,6 +168,11 @@ public class YourPlugin : BasePlugin
                             // Your JavaScript code here
                             console.log('Hello from my plugin!');
                         " },
+                        // Optional: load from a URL instead of inlining "script", and/or as an ES module (allows import)
+                        // { "src", "/MyPlugin/script.js" },
+                        // { "module", true },
+                        // Note: external (http/https) "src" URLs are only loaded if the admin enables
+                        // "Allow external script URLs" in the plugin settings; "/" paths always work.
                         { "enabled", true },
                         { "requiresAuthentication", false }, // Set to true if script should only run for logged-in users
                         { "pluginId", Id.ToString() },

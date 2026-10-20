@@ -35,6 +35,12 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Configuration
         /// Off by default -- the middleware is the primary injection path.
         /// </summary>
         public bool DisableScriptInjectionMiddleware { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether scripts may load from external
+        /// (http/https) URLs. When false, only paths starting with "/" are loaded.
+        /// </summary>
+        public bool AllowExternalScriptUrls { get; set; }
     }
 
     /// <summary>
@@ -44,6 +50,7 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Configuration
     {
         private string _name = "My Custom Script";
         private string _script = string.Empty;
+        private string _src = string.Empty;
 
         /// <summary>
         /// Gets or sets the name of the script.
@@ -62,6 +69,20 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Configuration
             get => _script;
             set => _script = XmlSanitizer.Sanitize(value);
         }
+
+        /// <summary>
+        /// Gets or sets an optional URL to load the script from instead of inlining it.
+        /// </summary>
+        public string Src
+        {
+            get => _src;
+            set => _src = XmlSanitizer.Sanitize(value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the script is loaded as an ES module.
+        /// </summary>
+        public bool Module { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether this script is enabled.

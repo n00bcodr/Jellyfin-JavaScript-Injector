@@ -198,9 +198,16 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Services
                 return (false, "Script name is required");
             }
 
-            if (string.IsNullOrWhiteSpace(payload.Script))
+            var hasSrc = !string.IsNullOrWhiteSpace(payload.Src);
+
+            if (string.IsNullOrWhiteSpace(payload.Script) && !hasSrc)
             {
-                return (false, "Script content is required");
+                return (false, "Script content or src is required");
+            }
+
+            if (hasSrc && !IsValidSrc(payload.Src!))
+            {
+                return (false, "Script src must be an http(s) URL or a root-relative path");
             }
 
             if (string.IsNullOrWhiteSpace(payload.PluginId))
@@ -232,10 +239,49 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Services
             return (true, string.Empty);
         }
 
+        /// <summary>
+        /// Checks that a script src is an http(s) URL or a root-relative path.
+        /// </summary>
+        /// <param name="src">The src value to check.</param>
+        /// <returns>True if the src is allowed.</returns>
+        public static bool IsValidSrc(string src)
+        {
+            src = src.Trim();
+            if (src.Length > 2000 || src.Any(char.IsControl))
+            {
+                return false;
+            }
+
+            if (src.StartsWith("//", StringComparison.Ordinal) || src.StartsWith("/\\", StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            if (src.StartsWith('/'))
+            {
+                return true;
+            }
+
+            return Uri.TryCreate(src, UriKind.Absolute, out var uri)
+                && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+        }
+
+        /// <summary>
+        /// Whether a (valid) src points off this server rather than at a "/" path.
+        /// </summary>
+        /// <param name="src">The src value to check.</param>
+        /// <returns>True if the src is an absolute http(s) URL.</returns>
+        public static bool IsExternalSrc(string src)
+        {
+            return !src.Trim().StartsWith('/');
+        }
+
         private static void UpdateScriptEntry(ref PluginJavaScriptEntry existingScript, JavaScriptRegistrationPayload payload)
         {
             existingScript.Name = payload.Name;
             existingScript.Script = payload.Script;
+            existingScript.Src = payload.Src ?? string.Empty;
+            existingScript.Module = payload.Module;
             existingScript.Enabled = payload.Enabled;
             existingScript.RequiresAuthentication = payload.RequiresAuthentication;
             existingScript.PluginId = payload.PluginId;
@@ -250,6 +296,8 @@ namespace Jellyfin.Plugin.JavaScriptInjector.Services
                 Id = payload.Id,
                 Name = payload.Name,
                 Script = payload.Script,
+                Src = payload.Src ?? string.Empty,
+                Module = payload.Module,
                 Enabled = payload.Enabled,
                 RequiresAuthentication = payload.RequiresAuthentication,
                 PluginId = payload.PluginId,

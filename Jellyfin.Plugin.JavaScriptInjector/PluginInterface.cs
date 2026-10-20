@@ -25,6 +25,8 @@ namespace Jellyfin.Plugin.JavaScriptInjector
         ///   "id": "unique-script-id",
         ///   "name": "Script Name",
         ///   "script": "JavaScript code here",
+        ///   "src": "/MyPlugin/script.js",   (optional, used instead of "script")
+        ///   "module": false,                (optional, load as type="module")
         ///   "enabled": true,
         ///   "requiresAuthentication": false,
         ///   "pluginId": "plugin-guid",

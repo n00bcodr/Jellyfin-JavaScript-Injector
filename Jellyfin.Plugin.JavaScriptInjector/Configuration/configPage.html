@@ -40,6 +40,16 @@
                 </div>
               </div>
 
+              <div class="checkboxContainer checkboxContainer-withDescription" style="margin-bottom: 1.5em">
+                <label class="emby-checkbox-label">
+                  <input is="emby-checkbox" type="checkbox" id="allowExternalUrlsCheckbox" />
+                  <span>Allow external script URLs</span>
+                </label>
+                <div class="fieldDescription checkboxFieldDescription">
+                  When off, "Script URL" only loads paths on this server (starting with /).
+                </div>
+              </div>
+
               <div id="scriptsContainer" class="verticalSection-extrabottompadding">
                 <!-- User script entries will be dynamically inserted here -->
               </div>
@@ -50,15 +60,6 @@
               ></div>
 
               <div class="verticalSection" style="display: flex; gap: 0.75em; flex-wrap: wrap">
-                <button
-                  is="emby-button"
-                  type="button"
-                  id="addScriptBtn"
-                  class="raised button-submit block"
-                  style="flex: 1; min-width: 160px"
-                >
-                  <span>Add Script</span>
-                </button>
                 <button
                   is="emby-button"
                   type="button"
@@ -131,6 +132,14 @@
               <br />
 
               <div id="floatingSaveContainer">
+                <button
+                  is="emby-button"
+                  type="button"
+                  id="addScriptBtn"
+                  class="raised"
+                >
+                  <span>Add Script</span>
+                </button>
                 <button
                   is="emby-button"
                   type="submit"
@@ -238,6 +247,18 @@
               <input is="emby-input" type="text" class="script-name-input" label="Script Name:" />
             </div>
             <div class="inputContainer">
+              <input
+                is="emby-input"
+                type="text"
+                class="script-src-input"
+                label="Script URL (optional):"
+              />
+              <div class="fieldDescription">
+                Load the script from this URL (http(s) or a path starting with /) instead of the
+                code below.
+              </div>
+            </div>
+            <div class="inputContainer">
               <textarea
                 class="script-code-textarea emby-textarea emby-input"
                 style="height: 300px; width: 100%"
@@ -252,6 +273,10 @@
               <label class="emby-checkbox-label">
                 <input is="emby-checkbox" type="checkbox" class="script-auth-checkbox" />
                 <span>Requires Authentication</span>
+              </label>
+              <label class="emby-checkbox-label">
+                <input is="emby-checkbox" type="checkbox" class="script-module-checkbox" />
+                <span>Load as module</span>
               </label>
               <button is="emby-button" type="button" class="raised button-delete script-remove-btn">
                 <span>Remove</span>
@@ -402,7 +427,7 @@
           // and loaded here via a JS-created <link> instead.
           var link = document.createElement("link");
           link.rel = "stylesheet";
-          link.href = ApiClient.getUrl("/JavaScriptInjector/Configuration/configPage.css");
+          link.href = ApiClient.getUrl("/JavaScriptInjector/Configuration/configPage.css?v=2");
           document.head.appendChild(link);
         })();
 
@@ -476,7 +501,7 @@
           // existing code that reads textarea.value (save, export, etc.) needs no changes.
           // onLintUpdate, if given, is called with the current list of JSHint
           // annotations every time linting re-runs (e.g. to toggle an error icon).
-          attachCodeEditor: function (textarea, readOnly, onLintUpdate) {
+          attachCodeEditor: function (textarea, readOnly, onLintUpdate, moduleCheckbox) {
             JavaScriptInjectorConfig.cmReady.then(function (loaded) {
               if (!loaded || !window.CodeMirror || !document.body.contains(textarea)) {
                 return;
@@ -508,16 +533,42 @@
                         laxbreak: true,
                         laxcomma: true,
                         expr: true,
+                        // Parse import/export/import.meta; follows the "Load as module" checkbox.
+                        module: !!(moduleCheckbox && moduleCheckbox.checked),
                       },
                       onUpdateLinting: onLintUpdate || undefined,
                     },
               });
               if (!readOnly) {
+                if (moduleCheckbox) {
+                  moduleCheckbox.addEventListener("change", function () {
+                    cm.getOption("lint").options.module = moduleCheckbox.checked;
+                    cm.performLint();
+                  });
+                }
                 cm.on("change", function () {
                   cm.save();
                   JavaScriptInjectorConfig.markDirty();
                 });
               }
+            });
+          },
+
+          // Fades closed entries that won't run (disabled, or blocked external URL).
+          refreshDimming: function () {
+            const allowExternal = document.querySelector("#allowExternalUrlsCheckbox").checked;
+            document.querySelectorAll("#scriptsContainer > details").forEach((d) => {
+              const srcInput = d.querySelector(".script-src-input");
+              const src = srcInput ? srcInput.value.trim() : "";
+              const blocked = !allowExternal && src !== "" && !src.startsWith("/");
+              const enabled = d.querySelector(".script-enabled-checkbox").checked;
+              d.classList.toggle("script-dimmed", !enabled || blocked);
+            });
+            document.querySelectorAll("#pluginScriptsContainer > details").forEach((d) => {
+              d.classList.toggle(
+                "script-dimmed",
+                !d.querySelector(".plugin-script-enabled-checkbox").checked
+              );
             });
           },
 
@@ -664,6 +715,8 @@
 
                 scriptsContainer.innerHTML = "";
                 pluginScriptsContainer.innerHTML = "";
+                document.querySelector("#allowExternalUrlsCheckbox").checked =
+                  !!config.AllowExternalScriptUrls;
 
                 // Load user scripts
                 if (config.CustomJavaScripts && config.CustomJavaScripts.length > 0) {
@@ -687,6 +740,7 @@
                 }
 
                 JavaScriptInjectorConfig.updateEmptyState();
+                JavaScriptInjectorConfig.refreshDimming();
                 JavaScriptInjectorConfig.isDirty = false;
                 JavaScriptInjectorConfig.updateDirtyIndicator();
                 Dashboard.hideLoadingMsg();
@@ -707,6 +761,8 @@
             const codeTextarea = clone.querySelector(".script-code-textarea");
             const enabledCheckbox = clone.querySelector(".script-enabled-checkbox");
             const authCheckbox = clone.querySelector(".script-auth-checkbox");
+            const srcInput = clone.querySelector(".script-src-input");
+            const moduleCheckbox = clone.querySelector(".script-module-checkbox");
             const removeBtn = clone.querySelector(".script-remove-btn");
             const arrowIcon = clone.querySelector(".arrow-icon");
             const dragHandle = clone.querySelector(".drag-handle");
@@ -720,9 +776,12 @@
             codeTextarea.value = script.Script;
             enabledCheckbox.checked = script.Enabled;
             authCheckbox.checked = script.RequiresAuthentication;
+            srcInput.value = script.Src || "";
+            moduleCheckbox.checked = !!script.Module;
 
             // Update quick enable button icon based on enabled state
             const updateQuickEnableIcon = () => {
+              JavaScriptInjectorConfig.refreshDimming();
               const icon = quickEnableBtn.querySelector('.material-icons');
               if (enabledCheckbox.checked) {
                 icon.textContent = 'check_box';
@@ -748,6 +807,11 @@
               JavaScriptInjectorConfig.markDirty();
             });
             authCheckbox.addEventListener("change", JavaScriptInjectorConfig.markDirty);
+            srcInput.addEventListener("input", () => {
+              JavaScriptInjectorConfig.markDirty();
+              JavaScriptInjectorConfig.refreshDimming();
+            });
+            moduleCheckbox.addEventListener("change", JavaScriptInjectorConfig.markDirty);
 
             quickEnableBtn.addEventListener("click", (e) => {
               e.preventDefault();
@@ -796,7 +860,7 @@
             JavaScriptInjectorConfig.setupDragAndDrop(detailsElement, dragHandle);
             JavaScriptInjectorConfig.attachCodeEditor(codeTextarea, false, function (annotations) {
               errorIcon.style.display = annotations && annotations.length > 0 ? "" : "none";
-            });
+            }, moduleCheckbox);
 
             return clone;
           },
@@ -833,6 +897,7 @@
 
             // Update quick enable button icon based on enabled state
             const updateQuickEnableIcon = () => {
+              JavaScriptInjectorConfig.refreshDimming();
               const icon = quickEnableBtn.querySelector('.material-icons');
               if (enabledCheckbox.checked) {
                 icon.textContent = 'check_box';
@@ -925,6 +990,10 @@
                 const enabled = container.querySelector(".script-enabled-checkbox").checked;
                 const requiresAuthentication =
                   container.querySelector(".script-auth-checkbox").checked;
+                const src = JavaScriptInjectorConfig.sanitizeForXml(
+                  container.querySelector(".script-src-input").value.trim()
+                );
+                const isModule = container.querySelector(".script-module-checkbox").checked;
 
                 if (name !== originalName || script !== originalScript) {
                   changedScriptCount += 1;
@@ -936,6 +1005,8 @@
                 scripts.push({
                   Name: name,
                   Script: script,
+                  Src: src,
+                  Module: isModule,
                   Enabled: enabled,
                   RequiresAuthentication: requiresAuthentication,
                 });
@@ -947,6 +1018,9 @@
               config
             ) {
               config.CustomJavaScripts = scripts;
+              config.AllowExternalScriptUrls = document.querySelector(
+                "#allowExternalUrlsCheckbox"
+              ).checked;
               // Don't modify PluginJavaScripts array here
               ApiClient.updatePluginConfiguration(JavaScriptInjectorConfig.pluginId, config).then(
                 function (result) {
@@ -968,6 +1042,8 @@
                   Script: container.querySelector(".script-code-textarea").value,
                   Enabled: container.querySelector(".script-enabled-checkbox").checked,
                   RequiresAuthentication: container.querySelector(".script-auth-checkbox").checked,
+                  Src: container.querySelector(".script-src-input").value.trim(),
+                  Module: container.querySelector(".script-module-checkbox").checked,
                 });
               });
             return scripts;
@@ -1058,11 +1134,14 @@
                     Script: s.Script,
                     Enabled: typeof s.Enabled === "boolean" ? s.Enabled : true,
                     RequiresAuthentication: !!s.RequiresAuthentication,
+                    Src: typeof s.Src === "string" ? s.Src : "",
+                    Module: !!s.Module,
                   })
                 );
               });
 
               JavaScriptInjectorConfig.markDirty();
+              JavaScriptInjectorConfig.refreshDimming();
               JavaScriptInjectorConfig.filterScripts();
             };
             reader.readAsText(file);
@@ -1140,6 +1219,13 @@
               JavaScriptInjectorConfig.markDirty();
               JavaScriptInjectorConfig.updateEmptyState();
             });
+
+            document
+              .querySelector("#allowExternalUrlsCheckbox")
+              .addEventListener("change", () => {
+                JavaScriptInjectorConfig.markDirty();
+                JavaScriptInjectorConfig.refreshDimming();
+              });
 
             document.querySelector("#scriptSearchInput").addEventListener("input", function () {
               JavaScriptInjectorConfig.filterScripts();
